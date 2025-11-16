@@ -1,6 +1,6 @@
 {
   "name": "WLED Icons",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "slug": "wled_icons",
   "description": "Rendu MDI/SVG et affichage sur matrice WLED 8x8",
   "url": "https://example.local/wled_icons",
