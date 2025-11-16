@@ -1,0 +1,27 @@
+{
+  "name": "WLED Icons",
+  "version": "0.1.0",
+  "slug": "wled_icons",
+  "description": "Rendu MDI/SVG et affichage sur matrice WLED 8x8",
+  "url": "https://example.local/wled_icons",
+  "arch": ["aarch64", "amd64", "armv7", "i386"],
+  "startup": "application",
+  "boot": "auto",
+  "ingress": true,
+  "ingress_port": 8234,
+  "panel_icon": "mdi:led-strip-variant",
+  "ports": {
+    "8234/tcp": 8234
+  },
+  "homeassistant": "2024.6.0",
+  "map": [
+    "config:rw",
+    "share:rw"
+  ],
+  "options": {
+    "log_level": "INFO"
+  },
+  "schema": {
+    "log_level": "list(DEBUG|INFO|WARNING|ERROR)"
+  }
+}

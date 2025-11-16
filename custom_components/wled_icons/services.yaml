@@ -1,0 +1,46 @@
+show_mdi:
+  name: Show MDI Icon
+  description: Affiche une icône Material Design sur WLED 8x8
+  fields:
+    host:
+      description: Adresse IP/host WLED
+      example: 192.168.1.50
+    name:
+      description: Nom de l'icône MDI (ex: home)
+      example: home
+    color:
+      description: Couleur hex optionnelle
+      example: "#00AEEF"
+    addon_url:
+      description: URL de l'add-on (ex: http://<ha_ip>:8234)
+      example: http://homeassistant.local:8234
+
+show_static:
+  name: Show Static PNG
+  description: Affiche une image PNG 8x8 sur WLED 8x8
+  fields:
+    host:
+      description: Adresse IP/host WLED
+    file:
+      description: Chemin PNG (accessible par Home Assistant)
+      example: /config/www/icon.png
+    addon_url:
+      description: URL de l'add-on (ex: http://<ha_ip>:8234)
+
+show_gif:
+  name: Show GIF Animation
+  description: Affiche un GIF animé sur WLED 8x8
+  fields:
+    host:
+      description: Adresse IP/host WLED
+    file:
+      description: Chemin GIF (accessible par Home Assistant)
+      example: /config/www/anim.gif
+    fps:
+      description: Forcer FPS (optionnel)
+      example: 8
+    loop:
+      description: Nombre de boucles
+      example: 2
+    addon_url:
+      description: URL de l'add-on (ex: http://<ha_ip>:8234)

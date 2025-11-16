@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuration WLED Icons",
+        "description": "Configurez l'hôte WLED et l'URL de l'add-on (optionnel).",
+        "data": {
+          "host": "Hôte WLED",
+          "addon_url": "URL Add-on"
+        }
+      }
+    },
+    "error": {
+      "host_required": "Hôte requis"
+    }
+  },
+  "services": {
+    "show_mdi": {
+      "name": "Afficher icône MDI",
+      "description": "Affiche une icône Material Design sur la matrice WLED 8x8"
+    },
+    "show_static": {
+      "name": "Afficher PNG statique",
+      "description": "Affiche un PNG 8x8 statique sur WLED"
+    },
+    "show_gif": {
+      "name": "Afficher GIF animé",
+      "description": "Affiche une animation GIF sur la matrice WLED 8x8"
+    }
+  }
+}

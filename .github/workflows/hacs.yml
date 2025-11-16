@@ -1,0 +1,38 @@
+name: HACS Validation
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install requirements
+        run: |
+          pip install pillow requests cairosvg
+      - name: Run HACS validation
+        uses: hacs/action@main
+        with:
+          category: integration
+      - name: Validate add-on config
+        run: |
+          python - <<'PY'
+import json, pathlib, sys
+cfg = pathlib.Path('addon/wled_icons/config.json')
+if not cfg.exists():
+    print('config.json manquant pour add-on'); sys.exit(1)
+with cfg.open() as f:
+    data = json.load(f)
+required = ['name','slug','version','startup']
+missing = [k for k in required if k not in data]
+if missing:
+    print('Champs add-on manquants:', missing); sys.exit(1)
+print('Add-on config.json OK')
+PY
