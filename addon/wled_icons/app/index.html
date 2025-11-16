@@ -273,6 +273,86 @@
     </div>
     
     <script>
+        // LocalStorage keys
+        const STORAGE_KEYS = {
+            host: 'wled_host',
+            mdi: 'wled_mdi',
+            color: 'wled_color',
+            rotate: 'wled_rotate',
+            flip_h: 'wled_flip_h',
+            flip_v: 'wled_flip_v',
+            animate: 'wled_animate',
+            mdi_fps: 'wled_mdi_fps',
+            mdi_loop: 'wled_mdi_loop',
+            gif_fps: 'wled_gif_fps',
+            gif_loop: 'wled_gif_loop'
+        };
+
+        // Load saved values on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Text inputs
+            ['host', 'mdi', 'color', 'mdi_fps', 'mdi_loop'].forEach(name => {
+                const input = document.querySelector(`[name="${name}"]`);
+                const saved = localStorage.getItem(STORAGE_KEYS[name]);
+                if (input && saved) input.value = saved;
+            });
+            
+            // GIF form inputs
+            const gifFps = document.querySelector('#gifForm [name="fps"]');
+            const gifLoop = document.querySelector('#gifForm [name="loop"]');
+            if (gifFps) {
+                const saved = localStorage.getItem(STORAGE_KEYS.gif_fps);
+                if (saved) gifFps.value = saved;
+            }
+            if (gifLoop) {
+                const saved = localStorage.getItem(STORAGE_KEYS.gif_loop);
+                if (saved) gifLoop.value = saved;
+            }
+            
+            // Rotate select
+            const rotate = document.querySelector('[name="rotate"]');
+            const savedRotate = localStorage.getItem(STORAGE_KEYS.rotate);
+            if (rotate && savedRotate) rotate.value = savedRotate;
+            
+            // Checkboxes
+            const flipH = document.querySelector('[name="flip_h"]');
+            const flipV = document.querySelector('[name="flip_v"]');
+            const animate = document.querySelector('[name="animate"]');
+            
+            if (flipH && localStorage.getItem(STORAGE_KEYS.flip_h) === 'true') flipH.checked = true;
+            if (flipV && localStorage.getItem(STORAGE_KEYS.flip_v) === 'true') flipV.checked = true;
+            if (animate && localStorage.getItem(STORAGE_KEYS.animate) === 'false') animate.checked = false;
+            
+            // Trigger preview if icon ID exists
+            const iconId = localStorage.getItem(STORAGE_KEYS.mdi);
+            if (iconId) previewIcon();
+        });
+
+        // Save values to localStorage
+        function saveFormValues(formId) {
+            const form = document.getElementById(formId);
+            const fd = new FormData(form);
+            
+            if (formId === 'f') {
+                // Main form
+                ['host', 'mdi', 'color', 'mdi_fps', 'mdi_loop', 'rotate'].forEach(name => {
+                    const val = fd.get(name);
+                    if (val) localStorage.setItem(STORAGE_KEYS[name], val);
+                });
+                localStorage.setItem(STORAGE_KEYS.flip_h, fd.get('flip_h') === 'on');
+                localStorage.setItem(STORAGE_KEYS.flip_v, fd.get('flip_v') === 'on');
+                localStorage.setItem(STORAGE_KEYS.animate, fd.get('animate') === 'on');
+            } else if (formId === 'gifForm') {
+                // GIF form
+                const host = document.querySelector('[name="host"]').value;
+                const fps = fd.get('fps');
+                const loop = fd.get('loop');
+                if (host) localStorage.setItem(STORAGE_KEYS.host, host);
+                if (fps) localStorage.setItem(STORAGE_KEYS.gif_fps, fps);
+                if (loop) localStorage.setItem(STORAGE_KEYS.gif_loop, loop);
+            }
+        }
+
         function showMsg(text) {
             const msg = document.getElementById('msg');
             msg.textContent = text;
@@ -293,6 +373,8 @@
             window.location.pathname.slice(0, -1) : window.location.pathname;
         
         async function sendIcon() {
+            saveFormValues('f');  // Save values before sending
+            
             const fd = new FormData(document.getElementById('f'));
             const host = fd.get('host');
             const icon_id = fd.get('mdi');
@@ -331,6 +413,8 @@
         }
         
         async function sendGif() {
+            saveFormValues('gifForm');  // Save values before sending
+            
             const fd = new FormData(document.getElementById('f'));
             const host = fd.get('host');
             const file = document.getElementById('gif').files[0];
@@ -340,8 +424,8 @@
                 return;
             }
             
-            const fps = fd.get('fps');
-            const loop = parseInt(fd.get('loop') || '1');
+            const fps = document.querySelector('#gifForm [name="fps"]').value;
+            const loop = parseInt(document.querySelector('#gifForm [name="loop"]').value || '1');
             
             const buf = await file.arrayBuffer();
             const bytes = new Uint8Array(buf);

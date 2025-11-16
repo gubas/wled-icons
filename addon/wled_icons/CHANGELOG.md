@@ -1,5 +1,12 @@
 # Changelog - WLED Icons Add-on
 
+## [0.2.4] - 2025-11-16
+
+### Ajouté
+- Sauvegarde automatique des valeurs du formulaire dans localStorage
+- Les champs (hôte, ID icône, couleur, rotation, FPS, boucles) et cases à cocher sont restaurés au rechargement de la page
+- Prévisualisation automatique de l'icône si un ID est sauvegardé
+
 ## [0.2.3] - 2025-11-16
 
 ### Corrigé
