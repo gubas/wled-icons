@@ -254,23 +254,7 @@ function rgbToHex(r,g,b){return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0'
 function renderPreview(pixels){const prev=document.getElementById('preview');prev.innerHTML='';pixels.forEach(([r,g,b],i)=>{const d=document.createElement('div');d.className='px';d.style.background=rgbToHex(r,g,b);prev.appendChild(d);});}
 function previewIcon(){const id=document.querySelector('[name=mdi]').value;if(!id)return;const prev=document.getElementById('iconPreview');prev.innerHTML=`<img src='https://developer.lametric.com/content/apps/icon_thumbs/${id}' style='width:64px;height:64px;image-rendering:pixelated' onerror='this.src=""' />`;}
 const basePath=window.location.pathname.endsWith('/')?window.location.pathname.slice(0,-1):window.location.pathname;
-async function sendMdi(){
-    const fd=new FormData(document.getElementById('f'));
-    let host=fd.get('host');
-    let icon_id=fd.get('mdi');
-    if(!host||!icon_id){alert('host et icon_id requis');return;}
-    const color=fd.get('color')||null;
-    const rotate=parseInt(fd.get('rotate')||'0');
-    const flip_h=fd.get('flip_h')==='on';
-    const flip_v=fd.get('flip_v')==='on';
-    const animate=fd.get('animate')==='on';
-    const fpsStr=fd.get('mdi_fps');
-    const loop=parseInt(fd.get('mdi_loop')||'1');
-    const body={host,icon_id,color,rotate,flip_h,flip_v,animate,loop};
-    if(fpsStr) body.fps=parseInt(fpsStr);
-    let r=await fetch(basePath+'/show/mdi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    document.getElementById('msg').textContent='LaMetric status '+r.status;
-}
+async function sendMdi(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let icon_id=fd.get('mdi');if(!host||!icon_id){alert('host et icon_id requis');return;}const color=fd.get('color')||null;const rotate=parseInt(fd.get('rotate')||'0');const flip_h=fd.get('flip_h')==='on';const flip_v=fd.get('flip_v')==='on';const animate=fd.get('animate')==='on';const fpsStr=fd.get('mdi_fps');const loop=parseInt(fd.get('mdi_loop')||'1');const body={host,icon_id,color,rotate,flip_h,flip_v,animate,loop};if(fpsStr)body.fps=parseInt(fpsStr);let r=await fetch(basePath+'/show/mdi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});document.getElementById('msg').textContent='LaMetric status '+r.status;}
 async function sendPng(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let file=document.getElementById('png').files[0];if(!host||!file){alert('host et fichier');return;}let buf=await file.arrayBuffer();let bytes=new Uint8Array(buf);let b64=btoa(String.fromCharCode(...bytes));let r=await fetch(basePath+'/show/png',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,png:b64})});document.getElementById('msg').textContent='PNG status '+r.status;}
 async function sendGif(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let file=document.getElementById('gif').files[0];if(!host||!file){alert('host et fichier');return;}let fps=fd.get('fps');let loop=parseInt(fd.get('loop')||'1');let buf=await file.arrayBuffer();let bytes=new Uint8Array(buf);let b64=btoa(String.fromCharCode(...bytes));let payload={host,gif:b64,loop};if(fps)payload.fps=parseInt(fps);let r=await fetch(basePath+'/show/gif',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});document.getElementById('msg').textContent='GIF status '+r.status;}
 </script></body></html>"""
