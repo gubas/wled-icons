@@ -17,8 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Services Home Assistant: `wled_icons.show_mdi`, `wled_icons.show_static`, `wled_icons.show_gif`
 - Recolorisation des icônes MDI/SVG avec couleur hex personnalisable
 - Translations FR/EN pour config flow et services
-- Workflow GitHub Actions pour validation HACS
-- Documentation complète de publication HACS et add-on
+- Workflow GitHub Actions pour validation CI
+- Documentation complète de publication add-on
 
 ### Changed
 - Migration vers architecture add-on + intégration custom component
@@ -38,5 +38,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Blueprint Home Assistant basique
 - Shell command pour intégration HA
 
-[0.2.0]: https://github.com/UTILISATEUR/wled-icons/releases/tag/v0.2.0
-[0.1.0]: https://github.com/UTILISATEUR/wled-icons/releases/tag/v0.1.0
+[0.2.0]: https://github.com/gubas/wled-icons/releases/tag/v0.2.0
+[0.1.0]: https://github.com/gubas/wled-icons/releases/tag/v0.1.0

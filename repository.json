@@ -1,12 +1,12 @@
 {
   "name": "WLED Icons Add-ons",
-  "url": "https://github.com/UTILISATEUR/wled-icons-addon-repo",
-  "maintainer": "Votre Nom <email@example.com>",
+  "url": "https://github.com/gubas/wled-icons",
+  "maintainer": "gubas",
   "add-ons": {
     "wled_icons": {
       "name": "WLED Icons",
       "description": "Rendu d'icônes MDI/SVG/PNG/GIF vers matrice WLED 8x8",
-      "url": "https://github.com/UTILISATEUR/wled-icons-addon-repo/tree/main/wled_icons"
+      "url": "https://github.com/gubas/wled-icons/tree/main/wled_icons"
     }
   }
 }
