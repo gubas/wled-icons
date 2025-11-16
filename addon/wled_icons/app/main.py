@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 import requests
 from io import BytesIO
-from PIL import Image, ImageSequence
+from PIL import Image, ImageSequence, ImageDraw, ImageFilter
 import cairosvg
 import time
 
@@ -55,12 +55,33 @@ def send_frame(host: str, colors: List[List[int]]):
 
 
 def rasterize_svg(svg_bytes: bytes, color: Optional[str]) -> Image.Image:
-    # Rasterize at higher res for better quality, then downscale with high-quality filter
-    png = cairosvg.svg2png(bytestring=svg_bytes, output_width=64, output_height=64, background_color='rgba(0,0,0,0)')
+    """
+    Optimized SVG to 8x8 rasterization with smart preprocessing
+    """
+    # Rasterize at medium resolution (32x32) for better edge detection
+    png = cairosvg.svg2png(
+        bytestring=svg_bytes, 
+        output_width=32, 
+        output_height=32, 
+        background_color='rgba(0,0,0,0)'
+    )
     img = Image.open(BytesIO(png)).convert("RGBA")
-    img = img.resize((8, 8), Image.Resampling.LANCZOS)
+    
+    # Apply threshold to get binary image (simplify details)
+    gray = img.convert("L")
+    threshold = 128
+    binary = gray.point(lambda x: 255 if x > threshold else 0, mode='1')
+    binary = binary.convert("RGBA")
+    
+    # Copy alpha channel from original
+    binary.putalpha(img.getchannel("A"))
+    
+    # Downscale with NEAREST for pixel-perfect effect
+    img = binary.resize((8, 8), Image.Resampling.NEAREST)
+    
     if color:
         img = recolor_nontransparent(img, hex_to_rgb(color))
+    
     return img
 
 
@@ -85,6 +106,7 @@ class PngRequest(BaseModel):
 # --- Endpoints ---
 @app.post("/show/mdi")
 def show_mdi(req: MdiRequest):
+    # Download SVG from GitHub
     urls = [
         f"https://raw.githubusercontent.com/Templarian/MaterialDesign/master/svg/{req.name}.svg",
         f"https://cdn.jsdelivr.net/gh/Templarian/MaterialDesign@latest/svg/{req.name}.svg",
@@ -100,6 +122,8 @@ def show_mdi(req: MdiRequest):
             continue
     if svg_bytes is None:
         raise HTTPException(status_code=404, detail="Icône MDI introuvable")
+    
+    # Rasterize with smart simplification
     img = rasterize_svg(svg_bytes, req.color)
     colors = frame_to_colors(img)
     send_frame(req.host, colors)
