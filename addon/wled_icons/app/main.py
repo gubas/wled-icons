@@ -102,6 +102,9 @@ class MdiRequest(BaseModel):
     rotate: int = Field(0, description="Rotation en degrés: 0, 90, 180, 270")
     flip_h: bool = Field(False, description="Miroir horizontal")
     flip_v: bool = Field(False, description="Miroir vertical")
+    animate: bool = Field(True, description="Animer si l'icône LaMetric est un GIF")
+    fps: Optional[int] = Field(None, description="Forcer FPS pour les GIFs (sinon utiliser la durée GIF)")
+    loop: int = Field(1, description="Nombre de boucles pour les GIFs")
 
 
 class SvgRequest(BaseModel):
@@ -126,22 +129,40 @@ def show_mdi(req: MdiRequest):
         if not r.ok:
             raise HTTPException(status_code=404, detail=f"Icône LaMetric {req.icon_id} introuvable")
         
-        # Load image (JPG or GIF - take first frame if GIF)
+        # Load image (JPG or GIF)
         img = Image.open(BytesIO(r.content))
-        
-        # If GIF, take only the first frame
-        if hasattr(img, 'is_animated') and img.is_animated:
-            img.seek(0)  # Go to first frame
-        
+
+        # If animated GIF and animation requested, play all frames
+        if getattr(img, 'is_animated', False) and req.animate:
+            frames: List[Image.Image] = []
+            durations: List[float] = []
+            for frame in ImageSequence.Iterator(img):
+                f = frame.convert("RGBA")
+                if f.size != (8, 8):
+                    f = f.resize((8, 8), Image.Resampling.NEAREST)
+                if req.color:
+                    f = recolor_nontransparent(f, hex_to_rgb(req.color))
+                frames.append(f)
+                durations.append(frame.info.get("duration", 100) / 1000.0)
+            if req.fps and req.fps > 0:
+                delay = 1.0 / req.fps
+                durations = [delay] * len(frames)
+            for _ in range(max(1, req.loop)):
+                for f, d in zip(frames, durations):
+                    colors = frame_to_colors(f, req.rotate, req.flip_h, req.flip_v)
+                    send_frame(req.host, colors)
+                    time.sleep(max(0.0, d))
+            return {"ok": True, "source": "lametric", "animated": True, "frames": len(frames)}
+
+        # Static image path (JPG or non-animated GIF or animate=False)
+        if getattr(img, 'is_animated', False):
+            img.seek(0)
         img = img.convert("RGBA")
-        
-        # Recolor if needed
         if req.color:
             img = recolor_nontransparent(img, hex_to_rgb(req.color))
-        
         colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
         send_frame(req.host, colors)
-        return {"ok": True, "source": "lametric", "animated": hasattr(Image.open(BytesIO(r.content)), 'is_animated')}
+        return {"ok": True, "source": "lametric", "animated": False}
     except requests.RequestException as e:
         raise HTTPException(status_code=502, detail=f"Erreur téléchargement: {str(e)}")
 
@@ -214,7 +235,10 @@ def root():
 <div id='iconPreview' style='display:inline-block;vertical-align:middle;margin:0.5rem'></div><br/>
 <label>Rotation <select name='rotate'><option value='0'>0°</option><option value='90'>90°</option><option value='180'>180°</option><option value='270'>270°</option></select></label>
 <label><input type='checkbox' name='flip_h'> Miroir H</label>
-<label><input type='checkbox' name='flip_v'> Miroir V</label><br/>
+<label><input type='checkbox' name='flip_v'> Miroir V</label>
+<label><input type='checkbox' name='animate' checked> Animer si GIF</label>
+<label>FPS (MDI) <input name='mdi_fps' size='4' placeholder='auto'></label>
+<label>Loop (MDI) <input name='mdi_loop' value='1' size='3'></label><br/>
 <button type='button' onclick='sendMdi()'>Afficher MDI</button><br/>
 <label>PNG 8x8 <input type='file' accept='image/png' id='png'></label>
 <button type='button' onclick='sendPng()'>Afficher PNG</button><br/>
@@ -230,7 +254,23 @@ function rgbToHex(r,g,b){return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0'
 function renderPreview(pixels){const prev=document.getElementById('preview');prev.innerHTML='';pixels.forEach(([r,g,b],i)=>{const d=document.createElement('div');d.className='px';d.style.background=rgbToHex(r,g,b);prev.appendChild(d);});}
 function previewIcon(){const id=document.querySelector('[name=mdi]').value;if(!id)return;const prev=document.getElementById('iconPreview');prev.innerHTML=`<img src='https://developer.lametric.com/content/apps/icon_thumbs/${id}' style='width:64px;height:64px;image-rendering:pixelated' onerror='this.src=""' />`;}
 const basePath=window.location.pathname.endsWith('/')?window.location.pathname.slice(0,-1):window.location.pathname;
-async function sendMdi(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let icon_id=fd.get('mdi');if(!host||!icon_id){alert('host et icon_id requis');return;}const color=fd.get('color')||null;const rotate=parseInt(fd.get('rotate')||'0');const flip_h=fd.get('flip_h')==='on';const flip_v=fd.get('flip_v')==='on';let r=await fetch(basePath+'/show/mdi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,icon_id,color,rotate,flip_h,flip_v})});document.getElementById('msg').textContent='LaMetric status '+r.status;}
+async function sendMdi(){
+    const fd=new FormData(document.getElementById('f'));
+    let host=fd.get('host');
+    let icon_id=fd.get('mdi');
+    if(!host||!icon_id){alert('host et icon_id requis');return;}
+    const color=fd.get('color')||null;
+    const rotate=parseInt(fd.get('rotate')||'0');
+    const flip_h=fd.get('flip_h')==='on';
+    const flip_v=fd.get('flip_v')==='on';
+    const animate=fd.get('animate')==='on';
+    const fpsStr=fd.get('mdi_fps');
+    const loop=parseInt(fd.get('mdi_loop')||'1');
+    const body={host,icon_id,color,rotate,flip_h,flip_v,animate,loop};
+    if(fpsStr) body.fps=parseInt(fpsStr);
+    let r=await fetch(basePath+'/show/mdi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    document.getElementById('msg').textContent='LaMetric status '+r.status;
+}
 async function sendPng(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let file=document.getElementById('png').files[0];if(!host||!file){alert('host et fichier');return;}let buf=await file.arrayBuffer();let bytes=new Uint8Array(buf);let b64=btoa(String.fromCharCode(...bytes));let r=await fetch(basePath+'/show/png',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,png:b64})});document.getElementById('msg').textContent='PNG status '+r.status;}
 async function sendGif(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let file=document.getElementById('gif').files[0];if(!host||!file){alert('host et fichier');return;}let fps=fd.get('fps');let loop=parseInt(fd.get('loop')||'1');let buf=await file.arrayBuffer();let bytes=new Uint8Array(buf);let b64=btoa(String.fromCharCode(...bytes));let payload={host,gif:b64,loop};if(fps)payload.fps=parseInt(fps);let r=await fetch(basePath+'/show/gif',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});document.getElementById('msg').textContent='GIF status '+r.status;}
 </script></body></html>"""
