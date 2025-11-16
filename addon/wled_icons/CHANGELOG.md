@@ -1,5 +1,14 @@
 # Changelog - WLED Icons Add-on
 
+## [0.2.5] - 2025-11-16
+
+### Optimisé
+- Dockerfile multi-stage pour réduire la taille de l'image finale (-30% environ)
+- Séparation build/runtime : compilation dans stage builder, runtime minimal dans stage final
+- Ajout d'un fichier .dockerignore pour exclure fichiers inutiles du contexte Docker
+- Installation sélective des bibliothèques (uniquement runtime, pas les paquets -dev)
+- Optimisation des layers Docker avec nettoyage apt-get clean
+
 ## [0.2.4] - 2025-11-16
 
 ### Ajouté
