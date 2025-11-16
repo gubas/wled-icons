@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-11-16
+
+### Intégration Home Assistant
+
+#### Ajouté
+- Nouveau service `show_lametric` avec support complet des icônes LaMetric animées
+- Paramètres avancés : `icon_id`, `rotate`, `flip_h`, `flip_v`, `animate`, `fps`, `loop`
+- Support des boucles infinies avec `loop: -1`
+- Valeur par défaut pour `addon_url` dans le config flow
+
+#### Modifié
+- Remplacement du service `show_mdi` par `show_lametric`
+- Simplification : appel direct à l'add-on (pas de fallback local)
+- Timeout augmenté à 30s pour les animations longues
+- Host et addon_url peuvent être préconfigurés dans l'intégration
+
+#### Supprimé
+- Service `show_static` (PNG upload)
+- Fallback local avec cairosvg (tout passe par l'add-on)
+- Dépendances Pillow et requests du manifest (inutilisées)
+
 ## [0.2.0] - 2025-01-XX
 
 ### Added

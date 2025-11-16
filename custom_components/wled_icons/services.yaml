@@ -1,46 +1,56 @@
-show_mdi:
-  name: Show MDI Icon
-  description: Affiche une icône Material Design sur WLED 8x8
+show_lametric:
+  name: Show LaMetric Icon
+  description: Affiche une icône LaMetric (statique ou animée) sur WLED 8x8
   fields:
+    icon_id:
+      description: ID de l'icône LaMetric (ex: 1486, 2867)
+      example: "1486"
+      required: true
     host:
-      description: Adresse IP/host WLED
-      example: 192.168.1.50
-    name:
-      description: Nom de l'icône MDI (ex: home)
-      example: home
+      description: Adresse IP/host WLED (optionnel si configuré)
+      example: "192.168.1.50"
     color:
-      description: Couleur hex optionnelle
-      example: "#00AEEF"
+      description: Couleur hex optionnelle pour recolorisation
+      example: "#FF0000"
+    rotate:
+      description: Rotation en degrés (0, 90, 180, 270)
+      example: 90
+    flip_h:
+      description: Miroir horizontal
+      example: false
+    flip_v:
+      description: Miroir vertical
+      example: false
+    animate:
+      description: Activer l'animation pour les GIFs
+      example: true
+    fps:
+      description: FPS forcé pour animation (optionnel)
+      example: 10
+    loop:
+      description: Nombre de boucles (-1 pour infini)
+      example: 1
     addon_url:
-      description: URL de l'add-on (ex: http://<ha_ip>:8234)
-      example: http://homeassistant.local:8234
-
-show_static:
-  name: Show Static PNG
-  description: Affiche une image PNG 8x8 sur WLED 8x8
-  fields:
-    host:
-      description: Adresse IP/host WLED
-    file:
-      description: Chemin PNG (accessible par Home Assistant)
-      example: /config/www/icon.png
-    addon_url:
-      description: URL de l'add-on (ex: http://<ha_ip>:8234)
+      description: URL de l'add-on (optionnel si configuré)
+      example: "http://localhost:8234"
 
 show_gif:
-  name: Show GIF Animation
-  description: Affiche un GIF animé sur WLED 8x8
+  name: Show Custom GIF
+  description: Affiche un GIF 8x8 personnalisé sur WLED
   fields:
-    host:
-      description: Adresse IP/host WLED
     file:
       description: Chemin GIF (accessible par Home Assistant)
-      example: /config/www/anim.gif
+      example: "/config/www/anim.gif"
+      required: true
+    host:
+      description: Adresse IP/host WLED (optionnel si configuré)
+      example: "192.168.1.50"
     fps:
-      description: Forcer FPS (optionnel)
+      description: FPS forcé pour animation (optionnel)
       example: 8
     loop:
-      description: Nombre de boucles
-      example: 2
+      description: Nombre de boucles (-1 pour infini)
+      example: 1
     addon_url:
-      description: URL de l'add-on (ex: http://<ha_ip>:8234)
+      description: URL de l'add-on (optionnel si configuré)
+      example: "http://localhost:8234"

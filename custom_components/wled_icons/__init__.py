@@ -45,85 +45,62 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
     data = entry.data
     host_default: str = data.get(CONF_HOST)
     addon_default: str | None = data.get(CONF_ADDON_URL)
-    async def async_show_mdi(call: ServiceCall):
-        host: str = call.data.get("host")
-        name: str = call.data.get("name")
+    
+    async def async_show_lametric(call: ServiceCall):
+        """Display a LaMetric icon (static or animated) on WLED"""
+        host: str = call.data.get("host", host_default)
+        icon_id: str = call.data.get("icon_id")
         color: str | None = call.data.get("color")
-        addon_url: str | None = call.data.get("addon_url")
-        if not host or not name:
-            _LOGGER.error("host et name requis")
+        rotate: int = call.data.get("rotate", 0)
+        flip_h: bool = call.data.get("flip_h", False)
+        flip_v: bool = call.data.get("flip_v", False)
+        animate: bool = call.data.get("animate", True)
+        fps: int | None = call.data.get("fps")
+        loop: int = call.data.get("loop", 1)
+        addon_url: str = call.data.get("addon_url", addon_default or "http://localhost:8234")
+        
+        if not host or not icon_id:
+            _LOGGER.error("host et icon_id requis")
             return
-        if addon_url:
-            try:
-                import aiohttp
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(f"{addon_url}/show/mdi", json={"host": host, "name": name, "color": color}) as resp:
-                        if resp.status >= 400:
-                            text = await resp.text()
-                            raise RuntimeError(f"Addon error {resp.status}: {text}")
-            except Exception as e:
-                _LOGGER.exception("Echec appel add-on: %s", e)
-        else:
-            # Fallback local requires cairosvg, may not be available
-            try:
-                import cairosvg  # type: ignore
-                import aiohttp
-                async with aiohttp.ClientSession() as session:
-                    for base in (
-                        "https://raw.githubusercontent.com/Templarian/MaterialDesign/master/svg",
-                        "https://cdn.jsdelivr.net/gh/Templarian/MaterialDesign@latest/svg",
-                    ):
-                        async with session.get(f"{base}/{name}.svg") as resp:
-                            if resp.status == 200:
-                                svg = await resp.read()
-                                break
-                    else:
-                        raise RuntimeError("Icône MDI introuvable")
-                png = cairosvg.svg2png(bytestring=svg, output_width=128, output_height=128, background_color='rgba(0,0,0,0)')
-                img = Image.open(BytesIO(png)).convert("RGBA").resize((8,8), Image.LANCZOS)
-                if color:
-                    # recolor non transparent
-                    rgb = tuple(int(color.lstrip('#')[i:i+2], 16) for i in (0,2,4))
-                    data = [((*rgb, a) if a>0 else (r,g,b,a)) for (r,g,b,a) in img.getdata()]
-                    img2 = Image.new("RGBA", img.size); img2.putdata(data); img = img2
-                colors = frame_to_colors(img)
-                await hass.async_add_executor_job(send_frame, host, colors)
-            except Exception as e:
-                _LOGGER.error("MDI local non disponible: %s. Installez l'add-on et utilisez addon_url.", e)
-
-    async def async_show_static(call: ServiceCall):
-        host: str = call.data.get("host")
-        file: str = call.data.get("file")
-        addon_url: str | None = call.data.get("addon_url")
-        if not host or not file:
-            _LOGGER.error("host et file requis")
-            return
-        if addon_url:
+        
+        try:
             import aiohttp
-            with open(file, 'rb') as f:
-                data = base64.b64encode(f.read()).decode('ascii')
+            payload: dict[str, Any] = {
+                "host": host,
+                "icon_id": icon_id,
+                "rotate": rotate,
+                "flip_h": flip_h,
+                "flip_v": flip_v,
+                "animate": animate,
+                "loop": loop
+            }
+            if color:
+                payload["color"] = color
+            if fps:
+                payload["fps"] = fps
+            
             async with aiohttp.ClientSession() as session:
-                async with session.post(f"{addon_url}/show/png", json={"host": host, "png": data}) as resp:
+                async with session.post(f"{addon_url}/show/mdi", json=payload, timeout=30) as resp:
                     if resp.status >= 400:
                         text = await resp.text()
-                        _LOGGER.error("Addon PNG error %s: %s", resp.status, text)
-        else:
-            img = Image.open(file).convert("RGBA")
-            if img.size != (8,8):
-                img = img.resize((8,8), Image.NEAREST)
-            colors = frame_to_colors(img)
-            await hass.async_add_executor_job(send_frame, host, colors)
+                        raise RuntimeError(f"Addon error {resp.status}: {text}")
+                    _LOGGER.info("LaMetric icon %s displayed on %s", icon_id, host)
+        except Exception as e:
+            _LOGGER.exception("Echec affichage icône LaMetric: %s", e)
 
     async def async_show_gif(call: ServiceCall):
-        host: str = call.data.get("host")
+        """Display a custom GIF animation on WLED"""
+        host: str = call.data.get("host", host_default)
         file: str = call.data.get("file")
         fps: int | None = call.data.get("fps")
         loop: int = call.data.get("loop", 1)
-        addon_url: str | None = call.data.get("addon_url")
+        addon_url: str = call.data.get("addon_url", addon_default or "http://localhost:8234")
+        
         if not host or not file:
             _LOGGER.error("host et file requis")
             return
-        if addon_url:
+        
+        try:
             import aiohttp
             with open(file, 'rb') as f:
                 data = base64.b64encode(f.read()).decode('ascii')
@@ -131,32 +108,16 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
             if fps:
                 payload["fps"] = fps
             async with aiohttp.ClientSession() as session:
-                async with session.post(f"{addon_url}/show/gif", json=payload) as resp:
+                async with session.post(f"{addon_url}/show/gif", json=payload, timeout=30) as resp:
                     if resp.status >= 400:
                         text = await resp.text()
                         _LOGGER.error("Addon GIF error %s: %s", resp.status, text)
-        else:
-            img = Image.open(file)
-            frames = []
-            durations = []
-            for frame in ImageSequence.Iterator(img):
-                f = frame.convert("RGBA")
-                if f.size != (8,8):
-                    f = f.resize((8,8), Image.NEAREST)
-                frames.append(f)
-                durations.append(frame.info.get("duration", 100) / 1000.0)
-            if fps and fps > 0:
-                delay = 1.0 / fps
-                durations = [delay] * len(frames)
-            import asyncio
-            for _ in range(max(1, int(loop))):
-                for f, d in zip(frames, durations):
-                    colors = frame_to_colors(f)
-                    await hass.async_add_executor_job(send_frame, host, colors)
-                    await asyncio.sleep(max(0.0, d))
+                    else:
+                        _LOGGER.info("GIF displayed on %s", host)
+        except Exception as e:
+            _LOGGER.exception("Echec affichage GIF: %s", e)
 
-    hass.services.async_register(DOMAIN, "show_mdi", async_show_mdi)
-    hass.services.async_register(DOMAIN, "show_static", async_show_static)
+    hass.services.async_register(DOMAIN, "show_lametric", async_show_lametric)
     hass.services.async_register(DOMAIN, "show_gif", async_show_gif)
 
     _LOGGER.info("wled_icons services registered (entry %s)", entry.entry_id)

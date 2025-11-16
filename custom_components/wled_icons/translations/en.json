@@ -15,17 +15,13 @@
     }
   },
   "services": {
-    "show_mdi": {
-      "name": "Show MDI Icon",
-      "description": "Render a Material Design Icon on the 8x8 WLED matrix"
-    },
-    "show_static": {
-      "name": "Show Static PNG",
-      "description": "Render a static 8x8 PNG on WLED"
+    "show_lametric": {
+      "name": "Show LaMetric Icon",
+      "description": "Display a LaMetric icon (static or animated) on the 8x8 WLED matrix"
     },
     "show_gif": {
-      "name": "Show GIF Animation",
-      "description": "Render a GIF animation on the 8x8 WLED matrix"
+      "name": "Show Custom GIF",
+      "description": "Display a custom 8x8 GIF animation on WLED"
     }
   }
 }

@@ -30,12 +30,21 @@ Dans Home Assistant :
 
 ### 2. Installation de l'intégration
 
-1. Copiez le dossier `custom_components/wled_icons` dans `<config>/custom_components/`
-2. Redémarrez Home Assistant
-3. **Paramètres** → **Appareils et services** → **Ajouter une intégration** → "WLED Icons"
-4. Configurez :
+**Option A - Installation manuelle** :
+1. Téléchargez le dossier `custom_components/wled_icons` depuis [GitHub](https://github.com/gubas/wled-icons)
+2. Copiez-le dans `<config>/custom_components/wled_icons/`
+3. Redémarrez Home Assistant complètement
+4. **Paramètres** → **Appareils et services** → **+ Ajouter une intégration** → "WLED Icons"
+5. Configurez :
    - **Adresse WLED** : IP de votre matrice (ex: `192.168.1.50`)
-   - **URL Add-on** : `http://localhost:8234` (ou URL personnalisée)
+   - **URL Add-on** : `http://localhost:8234` (valeur par défaut)
+
+**Option B - Via HACS** (après publication) :
+1. HACS → Intégrations → Menu → Dépôts personnalisés
+2. Ajoutez `https://github.com/gubas/wled-icons` (Intégration)
+3. Recherchez "WLED Icons" et installez
+4. Redémarrez Home Assistant
+5. Ajoutez l'intégration via l'interface
 
 ## 🎮 Utilisation
 
@@ -50,21 +59,31 @@ Dans Home Assistant :
 
 ### Services Home Assistant
 
+L'intégration expose deux services pour vos automatisations :
+
 #### `wled_icons.show_lametric`
 Affiche une icône LaMetric (statique ou animée).
 
 **Paramètres** :
-- `icon_id` (string) : ID LaMetric (ex: `1486`, `2867`)
-- `color` (string, optionnel) : Hex color pour recolorisation (ex: `#FF0000`)
+- `icon_id` (string, **requis**) : ID LaMetric (ex: `1486`, `2867`)
+- `host` (string, optionnel) : IP WLED (utilise la config si omis)
+- `color` (string, optionnel) : Couleur hex pour recolorisation (ex: `#FF0000`)
 - `rotate` (int, optionnel) : Rotation 0/90/180/270° (défaut: 0)
 - `flip_h` (bool, optionnel) : Miroir horizontal
 - `flip_v` (bool, optionnel) : Miroir vertical
 - `animate` (bool, optionnel) : Activer animation GIF (défaut: true)
 - `fps` (int, optionnel) : FPS forcé pour animation (sinon timing GIF original)
-- `loop` (int, optionnel) : Nombre de boucles (défaut: 1, -1 = infini)
+- `loop` (int, optionnel) : Nombre de boucles (défaut: 1, **-1 = infini**)
+- `addon_url` (string, optionnel) : URL add-on (utilise la config si omis)
 
-**Exemple** :
+**Exemples** :
 ```yaml
+# Icône statique simple
+service: wled_icons.show_lametric
+data:
+  icon_id: "2"  # Maison
+
+# Icône animée avec rotation
 service: wled_icons.show_lametric
 data:
   icon_id: "1486"  # Serpent animé
@@ -72,16 +91,38 @@ data:
   animate: true
   fps: 10
   loop: 3
+
+# Animation en boucle infinie
+service: wled_icons.show_lametric
+data:
+  icon_id: "2867"  # Pluie animée
+  loop: -1
 ```
 
 #### `wled_icons.show_gif`
-Affiche un GIF 8x8 personnalisé uploadé depuis l'interface web.
+Affiche un GIF 8x8 personnalisé depuis le système de fichiers Home Assistant.
+
+**Paramètres** :
+- `file` (string, **requis**) : Chemin du GIF (ex: `/config/www/anim.gif`)
+- `host` (string, optionnel) : IP WLED
+- `fps` (int, optionnel) : FPS forcé
+- `loop` (int, optionnel) : Nombre de boucles (**-1 = infini**)
+- `addon_url` (string, optionnel) : URL add-on
+
+**Exemple** :
+```yaml
+service: wled_icons.show_gif
+data:
+  file: "/config/www/custom_animation.gif"
+  fps: 12
+  loop: 2
+```
 
 ### Automatisations
 
-**Icône animée + effet WLED** :
+**Icône animée en boucle infinie** :
 ```yaml
-alias: WLED Animation Pluie
+alias: WLED Pluie Continue
 trigger:
   - platform: state
     entity_id: binary_sensor.rain
@@ -92,17 +133,25 @@ action:
       icon_id: "2867"  # Pluie animée
       animate: true
       loop: -1  # Boucle infinie
-  - delay: '00:00:05'
-  - service: light.turn_on
-    target:
-      entity_id: light.wled_matrix
-    data:
-      effect: Ripple
 ```
 
-**Notification avec icône** :
+**Stop animation (afficher icône statique)** :
 ```yaml
-alias: Notification LaMetric
+alias: WLED Stop Animation
+trigger:
+  - platform: state
+    entity_id: binary_sensor.rain
+    to: 'off'
+action:
+  - service: wled_icons.show_lametric
+    data:
+      icon_id: "2"  # Maison statique
+      animate: false
+```
+
+**Notification avec orientation personnalisée** :
+```yaml
+alias: Notification Arrivée
 trigger:
   - platform: state
     entity_id: person.john
@@ -112,10 +161,29 @@ action:
     data:
       icon_id: "2"  # Maison
       color: '#00FF00'
-      rotate: 0
-  - service: notify.mobile_app
+      rotate: 90
+      flip_h: true
+  - delay: '00:00:05'
+  - service: light.turn_on
+    target:
+      entity_id: light.wled_matrix
     data:
-      message: "John est arrivé"
+      effect: Fireworks
+```
+
+**Animation temporisée** :
+```yaml
+alias: WLED Timer Icon
+trigger:
+  - platform: state
+    entity_id: timer.cooking
+    to: 'active'
+action:
+  - service: wled_icons.show_lametric
+    data:
+      icon_id: "1486"  # Animation serpent
+      fps: 8
+      loop: 5  # 5 boucles puis s'arrête
 ```
 
 ## 🛠️ Développement
@@ -174,23 +242,48 @@ docker run --rm -p 8234:8234 wled_icons_test
 
 ## 🐛 Dépannage
 
-**Icône ne s'affiche pas** :
-- Vérifiez IP WLED dans config intégration
-- Testez WLED : `curl -X POST http://<IP>/json/state -d '{"on":true}'`
-- Vérifiez logs add-on : **Add-ons** → **WLED Icons** → **Logs**
+**L'intégration n'apparaît pas** :
+- Vérifiez que le dossier est bien dans `<config>/custom_components/wled_icons/`
+- Redémarrez Home Assistant **complètement** (pas juste reload)
+- Consultez les logs : **Paramètres** → **Système** → **Journaux** (cherchez "wled_icons")
+- Vérifiez le fichier `manifest.json` (doit contenir `"domain": "wled_icons"`)
 
-**UI add-on ne change pas** :
-- Version `config.json` incrémentée ?
-- Redémarrez add-on après rebuild
-- Videz cache navigateur (Ctrl+Shift+R)
+**Erreur 500 au chargement du config flow** :
+- Vérifiez que tous les fichiers sont présents (surtout `translations/`)
+- Version minimum : Home Assistant 2024.6.0
+- Consultez les logs pour plus de détails
+
+**Icône ne s'affiche pas** :
+- Vérifiez que l'add-on est démarré et accessible
+- Testez l'URL add-on : `http://localhost:8234` dans un navigateur
+- Vérifiez IP WLED dans la config de l'intégration
+- Testez WLED directement : `curl -X POST http://<IP>/json/state -d '{"on":true}'`
+- Vérifiez les logs de l'add-on : **Add-ons** → **WLED Icons** → **Logs**
+
+**L'add-on ne démarre pas** :
+- Vérifiez les logs de l'add-on pour les erreurs
+- Assurez-vous que le port 8234 n'est pas déjà utilisé
+- Rebuild l'add-on après mise à jour (incrémenter version force rebuild)
+
+**UI add-on ne se met pas à jour** :
+- Version incrémentée dans `config.json` ?
+- Redémarrez l'add-on après rebuild
+- Videz le cache navigateur (Ctrl+Shift+R ou Cmd+Shift+R)
 
 **Animation saccadée** :
-- Réglez paramètre `fps` (recommandé : 8-12 FPS pour 8x8)
-- Vérifiez latence réseau vers WLED
+- Réglez le paramètre `fps` (recommandé : 8-12 FPS pour 8x8)
+- Vérifiez la latence réseau vers WLED
+- Utilisez une connexion filaire si possible
+
+**Animation ne boucle pas infiniment** :
+- Vérifiez que `loop: -1` est bien défini
+- Version add-on 0.2.3+ requise pour support boucle infinie
+- Consultez les logs pour voir si l'animation s'arrête prématurément
 
 **Icône mal orientée** :
-- Utilisez `rotate` (0/90/180/270) et `flip_h`/`flip_v`
-- Testez via UI web pour trouver orientation correcte
+- Utilisez les paramètres `rotate` (0/90/180/270) et `flip_h`/`flip_v`
+- Testez via l'interface web de l'add-on pour trouver la bonne orientation
+- Sauvegardez les valeurs qui fonctionnent (localStorage dans le navigateur)
 
 ## 📚 Ressources
 

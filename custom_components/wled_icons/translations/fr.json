@@ -15,17 +15,13 @@
     }
   },
   "services": {
-    "show_mdi": {
-      "name": "Afficher icône MDI",
-      "description": "Affiche une icône Material Design sur la matrice WLED 8x8"
-    },
-    "show_static": {
-      "name": "Afficher PNG statique",
-      "description": "Affiche un PNG 8x8 statique sur WLED"
+    "show_lametric": {
+      "name": "Afficher Icône LaMetric",
+      "description": "Affiche une icône LaMetric (statique ou animée) sur la matrice WLED 8x8"
     },
     "show_gif": {
-      "name": "Afficher GIF animé",
-      "description": "Affiche une animation GIF sur la matrice WLED 8x8"
+      "name": "Afficher GIF Personnalisé",
+      "description": "Affiche un GIF 8x8 personnalisé sur WLED"
     }
   }
 }
