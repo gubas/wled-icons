@@ -88,8 +88,8 @@ def rasterize_svg(svg_bytes: bytes, color: Optional[str]) -> Image.Image:
 # --- Models ---
 class MdiRequest(BaseModel):
     host: str = Field(..., description="Adresse IP/host WLED")
-    name: str = Field(..., description="Nom de l'icône MDI, ex: home")
-    color: Optional[str] = Field(None, description="Couleur hex, ex: #00AEEF")
+    icon_id: str = Field(..., description="ID icône LaMetric, ex: 1486")
+    color: Optional[str] = Field(None, description="Couleur hex pour recolorer")
 
 
 class SvgRequest(BaseModel):
@@ -106,28 +106,26 @@ class PngRequest(BaseModel):
 # --- Endpoints ---
 @app.post("/show/mdi")
 def show_mdi(req: MdiRequest):
-    # Download SVG from GitHub
-    urls = [
-        f"https://raw.githubusercontent.com/Templarian/MaterialDesign/master/svg/{req.name}.svg",
-        f"https://cdn.jsdelivr.net/gh/Templarian/MaterialDesign@latest/svg/{req.name}.svg",
-    ]
-    svg_bytes = None
-    for u in urls:
-        try:
-            r = requests.get(u, timeout=8)
-            if r.ok and r.content.strip():
-                svg_bytes = r.content
-                break
-        except Exception:
-            continue
-    if svg_bytes is None:
-        raise HTTPException(status_code=404, detail="Icône MDI introuvable")
-    
-    # Rasterize with smart simplification
-    img = rasterize_svg(svg_bytes, req.color)
-    colors = frame_to_colors(img)
-    send_frame(req.host, colors)
-    return {"ok": True}
+    """Display LaMetric icon (8x8 JPG)"""
+    # Download 8x8 JPG from LaMetric
+    url = f"https://developer.lametric.com/content/apps/icon_thumbs/{req.icon_id}"
+    try:
+        r = requests.get(url, timeout=8)
+        if not r.ok:
+            raise HTTPException(status_code=404, detail=f"Icône LaMetric {req.icon_id} introuvable")
+        
+        # Load JPG (already 8x8)
+        img = Image.open(BytesIO(r.content)).convert("RGBA")
+        
+        # Recolor if needed
+        if req.color:
+            img = recolor_nontransparent(img, hex_to_rgb(req.color))
+        
+        colors = frame_to_colors(img)
+        send_frame(req.host, colors)
+        return {"ok": True, "source": "lametric"}
+    except requests.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"Erreur téléchargement: {str(e)}")
 
 
 @app.post("/show/svg")
@@ -192,7 +190,7 @@ def root():
 <h1>WLED Icons</h1>
 <form id='f'>
 <label>Host WLED <input name='host' required placeholder='192.168.1.50'></label><br/>
-<label>Icône MDI <input name='mdi' placeholder='home'></label>
+<label>Icône LaMetric ID <input name='mdi' placeholder='1486'></label>
 <label>Couleur <input name='color' placeholder='#00AEEF'></label>
 <button type='button' onclick='sendMdi()'>Afficher MDI</button><br/>
 <label>PNG 8x8 <input type='file' accept='image/png' id='png'></label>
@@ -208,7 +206,7 @@ def root():
 function rgbToHex(r,g,b){return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');}
 function renderPreview(pixels){const prev=document.getElementById('preview');prev.innerHTML='';pixels.forEach(([r,g,b],i)=>{const d=document.createElement('div');d.className='px';d.style.background=rgbToHex(r,g,b);prev.appendChild(d);});}
 const basePath=window.location.pathname.endsWith('/')?window.location.pathname.slice(0,-1):window.location.pathname;
-async function sendMdi(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let name=fd.get('mdi');if(!host||!name){alert('host et mdi requis');return;}const color=fd.get('color')||null;let r=await fetch(basePath+'/show/mdi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,name,color})});document.getElementById('msg').textContent='MDI status '+r.status;}
+async function sendMdi(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let icon_id=fd.get('mdi');if(!host||!icon_id){alert('host et icon_id requis');return;}const color=fd.get('color')||null;let r=await fetch(basePath+'/show/mdi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,icon_id,color})});document.getElementById('msg').textContent='LaMetric status '+r.status;}
 async function sendPng(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let file=document.getElementById('png').files[0];if(!host||!file){alert('host et fichier');return;}let buf=await file.arrayBuffer();let bytes=new Uint8Array(buf);let b64=btoa(String.fromCharCode(...bytes));let r=await fetch(basePath+'/show/png',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,png:b64})});document.getElementById('msg').textContent='PNG status '+r.status;}
 async function sendGif(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let file=document.getElementById('gif').files[0];if(!host||!file){alert('host et fichier');return;}let fps=fd.get('fps');let loop=parseInt(fd.get('loop')||'1');let buf=await file.arrayBuffer();let bytes=new Uint8Array(buf);let b64=btoa(String.fromCharCode(...bytes));let payload={host,gif:b64,loop};if(fps)payload.fps=parseInt(fps);let r=await fetch(basePath+'/show/gif',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});document.getElementById('msg').textContent='GIF status '+r.status;}
 </script></body></html>"""
