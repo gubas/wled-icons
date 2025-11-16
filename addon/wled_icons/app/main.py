@@ -55,9 +55,10 @@ def send_frame(host: str, colors: List[List[int]]):
 
 
 def rasterize_svg(svg_bytes: bytes, color: Optional[str]) -> Image.Image:
-    png = cairosvg.svg2png(bytestring=svg_bytes, output_width=128, output_height=128, background_color='rgba(0,0,0,0)')
+    # Rasterize at higher res for better quality, then downscale with high-quality filter
+    png = cairosvg.svg2png(bytestring=svg_bytes, output_width=64, output_height=64, background_color='rgba(0,0,0,0)')
     img = Image.open(BytesIO(png)).convert("RGBA")
-    img = img.resize((8, 8), Image.LANCZOS)
+    img = img.resize((8, 8), Image.Resampling.LANCZOS)
     if color:
         img = recolor_nontransparent(img, hex_to_rgb(color))
     return img
