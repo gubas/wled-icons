@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+    <meta charset='utf-8'/>
+    <meta name='viewport' content='width=device-width,initial-scale=1'/>
+    <title>WLED Icons</title>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --card: #fff;
+            --text: #212121;
+            --text-secondary: #757575;
+            --border: #e0e0e0;
+            --input-bg: #fff;
+            --primary: #18BCF2;
+            --primary-dark: #1599CC;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #111;
+                --card: #1e1e1e;
+                --text: #e1e1e1;
+                --text-secondary: #b0b0b0;
+                --border: #333;
+                --input-bg: #2a2a2a;
+                --shadow: 0 2px 8px rgba(0,0,0,0.4);
+            }
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 1.5rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        h1 svg {
+            width: 32px;
+            height: 32px;
+            vertical-align: middle;
+            margin-right: 8px;
+            fill: var(--primary);
+        }
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        a:hover {
+            color: var(--primary-dark);
+        }
+        label {
+            display: block;
+            margin: 0.75rem 0 0.25rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        input[type=text], input[type=number], select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+        input[type=text]:focus, input[type=number]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        input[type=checkbox] {
+            margin-right: 0.4rem;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        input[type=file] {
+            width: 100%;
+            padding: 0.4rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 0.5rem 0;
+        }
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 400;
+            cursor: pointer;
+            user-select: none;
+        }
+        .inline-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background: var(--primary-dark);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        #iconPreview {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            border-radius: 6px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #iconPreview img {
+            image-rendering: pixelated;
+            border-radius: 4px;
+        }
+        #msg {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        #msg:empty {
+            display: none;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+        .section-title:first-child {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='card'>
+            <h1>
+                <svg viewBox='0 0 24 24'>
+                    <path d='M12,2L2,7V11C2,16.5 6,21.8 12,23C18,21.8 22,16.5 22,11V7L12,2M12,4.2L20,8.3V11C20,15.5 16.8,19.9 12,21C7.2,19.9 4,15.5 4,11V8.3L12,4.2M11,7V13H13V7H11M11,15V17H13V15H11Z'/>
+                </svg>
+                WLED Icons
+            </h1>
+            <p class='subtitle'>Affichage d'icônes LaMetric sur matrice LED 8x8</p>
+            <a href='https://developer.lametric.com/icons' target='_blank'>🔍 Parcourir la galerie LaMetric</a>
+        </div>
+        
+        <div class='card'>
+            <div class='section-title'>Configuration</div>
+            <form id='f'>
+                <label>Adresse WLED</label>
+                <input name='host' type='text' required placeholder='192.168.1.50' autocomplete='off'/>
+                
+                <label>ID Icône LaMetric</label>
+                <input name='mdi' type='text' placeholder='1486' onchange='previewIcon()' autocomplete='off'/>
+                
+                <div id='iconPreview'></div>
+                
+                <label>Couleur personnalisée (optionnel)</label>
+                <input name='color' type='text' placeholder='#18BCF2' autocomplete='off'/>
+                
+                <div class='section-title'>Orientation</div>
+                <div class='checkbox-group'>
+                    <label class='checkbox-label'><input type='checkbox' name='flip_h'/>Miroir horizontal</label>
+                    <label class='checkbox-label'><input type='checkbox' name='flip_v'/>Miroir vertical</label>
+                </div>
+                
+                <label>Rotation</label>
+                <select name='rotate'>
+                    <option value='0'>0°</option>
+                    <option value='90'>90°</option>
+                    <option value='180'>180°</option>
+                    <option value='270'>270°</option>
+                </select>
+                
+                <div class='section-title'>Animation (GIF uniquement)</div>
+                <label class='checkbox-label'>
+                    <input type='checkbox' name='animate' checked/>Activer l'animation
+                </label>
+                <div class='inline-inputs'>
+                    <div>
+                        <label>FPS</label>
+                        <input name='mdi_fps' type='number' placeholder='Auto' min='1' max='60'/>
+                    </div>
+                    <div>
+                        <label>Boucles</label>
+                        <input name='mdi_loop' type='number' value='1' min='1' max='999'/>
+                    </div>
+                </div>
+                
+                <button type='button' onclick='sendIcon()'>Afficher sur WLED</button>
+            </form>
+        </div>
+        
+        <div class='card'>
+            <div class='section-title'>Upload GIF personnalisé</div>
+            <form id='gifForm'>
+                <label>Fichier GIF (8x8 pixels)</label>
+                <input type='file' accept='image/gif' id='gif'/>
+                <div class='inline-inputs' style='margin-top:1rem'>
+                    <div>
+                        <label>FPS</label>
+                        <input name='fps' type='number' placeholder='Auto' min='1' max='60'/>
+                    </div>
+                    <div>
+                        <label>Boucles</label>
+                        <input name='loop' type='number' value='1' min='1' max='999'/>
+                    </div>
+                </div>
+                <button type='button' onclick='sendGif()'>Afficher GIF</button>
+            </form>
+        </div>
+        
+        <div id='msg'></div>
+    </div>
+    
+    <script>
+        function showMsg(text) {
+            const msg = document.getElementById('msg');
+            msg.textContent = text;
+            setTimeout(() => msg.textContent = '', 5000);
+        }
+        
+        function previewIcon() {
+            const id = document.querySelector('[name=mdi]').value;
+            const prev = document.getElementById('iconPreview');
+            if (!id) {
+                prev.innerHTML = '';
+                return;
+            }
+            prev.innerHTML = `<img src='https://developer.lametric.com/content/apps/icon_thumbs/${id}' style='width:64px;height:64px' onerror='this.src=""' alt='Preview'/>`;
+        }
+        
+        const basePath = window.location.pathname.endsWith('/') ? 
+            window.location.pathname.slice(0, -1) : window.location.pathname;
+        
+        async function sendIcon() {
+            const fd = new FormData(document.getElementById('f'));
+            const host = fd.get('host');
+            const icon_id = fd.get('mdi');
+            
+            if (!host || !icon_id) {
+                showMsg('❌ Veuillez renseigner l\'adresse WLED et l\'ID icône');
+                return;
+            }
+            
+            const color = fd.get('color') || null;
+            const rotate = parseInt(fd.get('rotate') || '0');
+            const flip_h = fd.get('flip_h') === 'on';
+            const flip_v = fd.get('flip_v') === 'on';
+            const animate = fd.get('animate') === 'on';
+            const fpsStr = fd.get('mdi_fps');
+            const loop = parseInt(fd.get('mdi_loop') || '1');
+            
+            const body = { host, icon_id, color, rotate, flip_h, flip_v, animate, loop };
+            if (fpsStr) body.fps = parseInt(fpsStr);
+            
+            try {
+                const r = await fetch(basePath + '/show/mdi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                if (r.ok) {
+                    showMsg('✅ Icône affichée avec succès');
+                } else {
+                    showMsg(`❌ Erreur ${r.status}`);
+                }
+            } catch (e) {
+                showMsg('❌ Erreur de connexion');
+            }
+        }
+        
+        async function sendGif() {
+            const fd = new FormData(document.getElementById('f'));
+            const host = fd.get('host');
+            const file = document.getElementById('gif').files[0];
+            
+            if (!host || !file) {
+                showMsg('❌ Veuillez renseigner l\'adresse WLED et sélectionner un fichier');
+                return;
+            }
+            
+            const fps = fd.get('fps');
+            const loop = parseInt(fd.get('loop') || '1');
+            
+            const buf = await file.arrayBuffer();
+            const bytes = new Uint8Array(buf);
+            const b64 = btoa(String.fromCharCode(...bytes));
+            
+            const payload = { host, gif: b64, loop };
+            if (fps) payload.fps = parseInt(fps);
+            
+            try {
+                const r = await fetch(basePath + '/show/gif', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (r.ok) {
+                    showMsg('✅ GIF affiché avec succès');
+                } else {
+                    showMsg(`❌ Erreur ${r.status}`);
+                }
+            } catch (e) {
+                showMsg('❌ Erreur de connexion');
+            }
+        }
+    </script>
+</body>
+</html>

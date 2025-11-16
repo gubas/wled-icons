@@ -1,13 +1,18 @@
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from pathlib import Path
 import requests
 from io import BytesIO
 from PIL import Image, ImageSequence, ImageDraw, ImageFilter
 import cairosvg
 import time
 
-app = FastAPI(title="WLED Icons Service", version="0.1.0")
+app = FastAPI(title="WLED Icons Service", version="0.2.0")
+
+# HTML file path
+HTML_FILE = Path(__file__).parent / "index.html"
 
 # --- Helpers ---
 
@@ -222,40 +227,5 @@ def show_gif(req: GifRequest):
 
 @app.get("/")
 def root():
-    html = """<!DOCTYPE html><html lang='fr'>
-<head><meta charset='utf-8'/><title>WLED Icons UI</title>
-<style>body{font-family:Arial;margin:1.2rem;}input,button{padding:.4rem;margin:.2rem;}#preview{display:grid;grid-template-columns:repeat(8,20px);grid-gap:2px;margin-top:1rem;} .px{width:20px;height:20px;background:#000;}</style>
-</head><body>
-<h1>WLED Icons</h1>
-<p><a href='https://developer.lametric.com/icons' target='_blank' style='color:#00AEEF'>🔍 Chercher des icônes LaMetric</a></p>
-<form id='f'>
-<label>Host WLED <input name='host' required placeholder='192.168.1.50'></label><br/>
-<label>Icône LaMetric ID <input name='mdi' placeholder='1486' onchange='previewIcon()'></label>
-<label>Couleur <input name='color' placeholder='#00AEEF'></label><br/>
-<div id='iconPreview' style='display:inline-block;vertical-align:middle;margin:0.5rem'></div><br/>
-<label>Rotation <select name='rotate'><option value='0'>0°</option><option value='90'>90°</option><option value='180'>180°</option><option value='270'>270°</option></select></label>
-<label><input type='checkbox' name='flip_h'> Miroir H</label>
-<label><input type='checkbox' name='flip_v'> Miroir V</label>
-<label><input type='checkbox' name='animate' checked> Animer si GIF</label>
-<label>FPS (MDI) <input name='mdi_fps' size='4' placeholder='auto'></label>
-<label>Loop (MDI) <input name='mdi_loop' value='1' size='3'></label><br/>
-<button type='button' onclick='sendMdi()'>Afficher MDI</button><br/>
-<label>PNG 8x8 <input type='file' accept='image/png' id='png'></label>
-<button type='button' onclick='sendPng()'>Afficher PNG</button><br/>
-<label>GIF <input type='file' accept='image/gif' id='gif'></label>
-<label>FPS <input name='fps' size='4'></label>
-<label>Loop <input name='loop' value='1' size='3'></label>
-<button type='button' onclick='sendGif()'>Afficher GIF</button>
-</form>
-<div id='msg'></div>
-<div id='preview'></div>
-<script>
-function rgbToHex(r,g,b){return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');}
-function renderPreview(pixels){const prev=document.getElementById('preview');prev.innerHTML='';pixels.forEach(([r,g,b],i)=>{const d=document.createElement('div');d.className='px';d.style.background=rgbToHex(r,g,b);prev.appendChild(d);});}
-function previewIcon(){const id=document.querySelector('[name=mdi]').value;if(!id)return;const prev=document.getElementById('iconPreview');prev.innerHTML=`<img src='https://developer.lametric.com/content/apps/icon_thumbs/${id}' style='width:64px;height:64px;image-rendering:pixelated' onerror='this.src=""' />`;}
-const basePath=window.location.pathname.endsWith('/')?window.location.pathname.slice(0,-1):window.location.pathname;
-async function sendMdi(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let icon_id=fd.get('mdi');if(!host||!icon_id){alert('host et icon_id requis');return;}const color=fd.get('color')||null;const rotate=parseInt(fd.get('rotate')||'0');const flip_h=fd.get('flip_h')==='on';const flip_v=fd.get('flip_v')==='on';const animate=fd.get('animate')==='on';const fpsStr=fd.get('mdi_fps');const loop=parseInt(fd.get('mdi_loop')||'1');const body={host,icon_id,color,rotate,flip_h,flip_v,animate,loop};if(fpsStr)body.fps=parseInt(fpsStr);let r=await fetch(basePath+'/show/mdi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});document.getElementById('msg').textContent='LaMetric status '+r.status;}
-async function sendPng(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let file=document.getElementById('png').files[0];if(!host||!file){alert('host et fichier');return;}let buf=await file.arrayBuffer();let bytes=new Uint8Array(buf);let b64=btoa(String.fromCharCode(...bytes));let r=await fetch(basePath+'/show/png',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,png:b64})});document.getElementById('msg').textContent='PNG status '+r.status;}
-async function sendGif(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let file=document.getElementById('gif').files[0];if(!host||!file){alert('host et fichier');return;}let fps=fd.get('fps');let loop=parseInt(fd.get('loop')||'1');let buf=await file.arrayBuffer();let bytes=new Uint8Array(buf);let b64=btoa(String.fromCharCode(...bytes));let payload={host,gif:b64,loop};if(fps)payload.fps=parseInt(fps);let r=await fetch(basePath+'/show/gif',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});document.getElementById('msg').textContent='GIF status '+r.status;}
-</script></body></html>"""
-    return Response(content=html, media_type="text/html")
+    """Serve the HTML UI"""
+    return FileResponse(HTML_FILE, media_type="text/html")

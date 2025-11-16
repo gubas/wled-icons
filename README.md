@@ -1,153 +1,214 @@
-# Contrôle WLED 8x8 avec icônes Material Design
+# WLED Icons - Affichage d'icônes LaMetric sur matrice LED 8x8
 
-Ce projet permet d'afficher des icônes Material Design (MDI) et des images (PNG/GIF) sur une matrice WLED 8x8, intégrable à Home Assistant.
+Affichez des icônes **LaMetric animées** sur votre matrice WLED 8x8 directement depuis Home Assistant.
 
-## Approche
-- Rendu d'une icône MDI / SVG / PNG / GIF et réduction en 8x8.
-- Envoi direct à WLED via l'API JSON (`POST /json/state`) avec `seg.i` (tableau des 64 pixels RGB).
-- Animation GIF: frames envoyées avec respect de la durée ou FPS forcé.
-- Deux composants : Add-on (rendu + API) et Intégration Home Assistant (services).
+## ✨ Fonctionnalités
 
-## Installation / Déploiement
-Utilisez uniquement l'add-on et l'intégration Home Assistant. Plus de dépendances Python à installer dans l'environnement principal.
+- 🎨 **Icônes LaMetric** : Plus de 1800 icônes 8x8 pixel-art optimisées pour LED
+- 🎬 **GIFs animés** : Support complet des animations LaMetric avec contrôle FPS/boucles
+- 🔄 **Transformations** : Rotation (0/90/180/270°) et miroirs (H/V) pour orientation matrice
+- 🎨 **Recolorisation** : Changement de couleur des icônes monochromes
+- 📤 **Upload personnalisé** : Envoi de vos propres GIFs 8x8
+- 🌓 **Interface moderne** : UI responsive avec support dark mode
+- 🏠 **Intégration HA** : Services Home Assistant pour automatisations
 
-### Publication GitHub
-1. (Same repo) Créez un dépôt GitHub et placez les deux composants au même endroit:
-```
-gubas/wled-icons/ (repo unique recommandé)
-  README.md
-  custom_components/wled_icons/...
-  .github/workflows/ (CI workflows)
-```
-2. Placez l'add-on dans le répertoire `wled_icons/` du même dépôt:
-```
-gubas/wled-icons/
-  repository.json
-  wled_icons/
-    config.json
-    Dockerfile
-    run.sh
-    app/
-      main.py
-    requirements.txt
-  README.md
-```
-3. Mettez à jour `repository.json` avec votre nom d'utilisateur et URL correcte (ex: `https://github.com/gubas/wled-icons`).
-4. Tagguez une release initiale pour l'intégration (ex: `v0.2.0`). Le champ `version` du `manifest.json` doit refléter la release.
-5. Après push et tag, créez une release GitHub pour l'intégration (non obligatoire).
-7. Pour l'add-on: Supervisor > Add-ons > Dépôts > Ajouter l'URL du dépôt add-on puis installer "WLED Icons".
+## 📦 Architecture
 
-### Versioning
-- Utiliser SemVer: MAJ mineure pour nouvelles fonctions, patch pour corrections.
-- Garder cohérence entre tag Git et `manifest.json`.
-- L'add-on peut avoir un numéro distinct; documenter compatibilité dans README.
+- **Add-on Home Assistant** : FastAPI server avec Ingress UI (port 8234)
+- **Intégration custom** : Services HA + config flow
+- **API LaMetric** : Téléchargement direct des icônes depuis `developer.lametric.com`
 
-### Fichiers ajoutés
-- `translations/`: support multilingue config flow + services.
-- `repository.json`: index pour le dépôt d'add-ons.
- - Workflow `.github/workflows/`: CI workflows (validation, publish).
+## 🚀 Installation
 
-### Étapes de Release Intégration
-1. Incrémenter `manifest.json` version.
-2. Mettre à jour README si besoin.
-3. Créer tag `vX.Y.Z` sur GitHub.
-4. Vérifier Actions (CI green).
-5. Annoncer changelog (voir suggestion section Roadmap / Ajouts).
+### 1. Ajout du dépôt d'add-ons
 
-### Release checklist — Add-on
-1. Vérifier `addon/wled_icons/config.json`: le champ `version` doit être mis à jour et `slug` est correct.
-2. Créer un tag Git et pousser les sources (ex: `git tag v0.2.0 && git push --tags`).
-3. Créez une release GitHub. Ajoutez changelog et notes. Publier release va déclencher la CI de publication d'image.
-4. L'action `publish_addon.yml` construira une image multi-arch (GHCR) et la publiera automatiquement lors d'une release. Pour que GHCR accepte la publication, autorisez `GITHUB_TOKEN` (normalement fourni automatiquement par GitHub Actions).
-5. Optionnel: si vous souhaitez que le Supervisor télécharge l'image directement (au lieu de builder localement), définissez `image` dans `addon/wled_icons/config.json` pour pointer sur `ghcr.io/gubas/wled-icons-addons:vX.Y.Z`.
+Dans Home Assistant :
+1. **Paramètres** → **Modules complémentaires** → **Dépôt de modules complémentaires**
+2. Ajoutez : `https://github.com/gubas/wled-icons`
+3. Installez **"WLED Icons"**
+4. Démarrez l'add-on
 
-### Release checklist — Integration
-1. Mettre à jour `custom_components/wled_icons/manifest.json` avec la nouvelle `version`.
-2. Mettre à jour la section changelog pour la nouvelle version (`CHANGELOG.md`).
-3. Créer un tag et release GitHub (ex: `v0.2.0`).
-4. Vérifiez le pipeline ci et corrigez toute erreur éventuelle.
+### 2. Installation de l'intégration
 
-### Publier l'intégration
-1. Poussez le tag `vX.Y.Z` et publiez la release.
-2. Mettre à jour `CHANGELOG.md` et `manifest.json`.
-3. L'intégration est prête pour l'installation manuelle par l'utilisateur.
+1. Copiez le dossier `custom_components/wled_icons` dans `<config>/custom_components/`
+2. Redémarrez Home Assistant
+3. **Paramètres** → **Appareils et services** → **Ajouter une intégration** → "WLED Icons"
+4. Configurez :
+   - **Adresse WLED** : IP de votre matrice (ex: `192.168.1.50`)
+   - **URL Add-on** : `http://localhost:8234` (ou URL personnalisée)
 
-### Publish GHCR / Docker (optionnel mais recommandé pour add-on)
-1. Configurez GitHub Secrets (Settings -> Secrets) si vous voulez publier sur GHCR au delà de `GITHUB_TOKEN` (optionnel). Par défaut `GITHUB_TOKEN` suffit pour un repo public.
-2. La CI `publish_addon.yml` est déclenchée sur une release : elle construit l'image multi-arch et la push vers `ghcr.io/gubas/wled-icons-addons:vX.Y.Z`.
-3. Ajoutez ce tag en tant qu'image dans `addon/wled_icons/config.json` si vous voulez que Supervisor utilise l'image prête plutôt que builder localement.
+## 🎮 Utilisation
 
-### Exemple: Automation Home Assistant
-Voici une automation simple qui affiche l'icône MDI "home" sur la matrice, puis active un effet WLED :
+### Interface Web (Ingress)
 
+1. Ouvrez l'add-on → **Ouvrir l'interface web**
+2. Entrez l'ID d'une icône LaMetric (ex: `1486` pour serpent animé)
+3. Ajustez orientation, couleur, animation
+4. Cliquez **"Afficher sur WLED"**
+
+**Trouver des icônes** : [Galerie LaMetric](https://developer.lametric.com/icons)
+
+### Services Home Assistant
+
+#### `wled_icons.show_lametric`
+Affiche une icône LaMetric (statique ou animée).
+
+**Paramètres** :
+- `icon_id` (string) : ID LaMetric (ex: `1486`, `2867`)
+- `color` (string, optionnel) : Hex color pour recolorisation (ex: `#FF0000`)
+- `rotate` (int, optionnel) : Rotation 0/90/180/270° (défaut: 0)
+- `flip_h` (bool, optionnel) : Miroir horizontal
+- `flip_v` (bool, optionnel) : Miroir vertical
+- `animate` (bool, optionnel) : Activer animation GIF (défaut: true)
+- `fps` (int, optionnel) : FPS forcé pour animation (sinon timing GIF original)
+- `loop` (int, optionnel) : Nombre de boucles (défaut: 1, -1 = infini)
+
+**Exemple** :
 ```yaml
-alias: WLED Affiche Home + Rainbow
-description: "Affiche l'icône home puis active l'effet Rainbow"
+service: wled_icons.show_lametric
+data:
+  icon_id: "1486"  # Serpent animé
+  rotate: 90
+  animate: true
+  fps: 10
+  loop: 3
+```
+
+#### `wled_icons.show_gif`
+Affiche un GIF 8x8 personnalisé uploadé depuis l'interface web.
+
+### Automatisations
+
+**Icône animée + effet WLED** :
+```yaml
+alias: WLED Animation Pluie
 trigger:
   - platform: state
-    entity_id: input_boolean.wled_trigger
+    entity_id: binary_sensor.rain
     to: 'on'
 action:
-  - service: wled_icons.show_mdi
+  - service: wled_icons.show_lametric
     data:
-      name: home
-      color: '#00AEEF'
-  - delay: '00:00:02'  # attend 2 sec après affichage
+      icon_id: "2867"  # Pluie animée
+      animate: true
+      loop: -1  # Boucle infinie
+  - delay: '00:00:05'
   - service: light.turn_on
     target:
       entity_id: light.wled_matrix
     data:
-      effect: Rainbow
-mode: single
+      effect: Ripple
 ```
 
-Note: Remplacez `input_boolean.wled_trigger` par le déclencheur de votre choix et `light.wled_matrix` par l'entité WLED dans votre Home Assistant.
+**Notification avec icône** :
+```yaml
+alias: Notification LaMetric
+trigger:
+  - platform: state
+    entity_id: person.john
+    to: 'home'
+action:
+  - service: wled_icons.show_lametric
+    data:
+      icon_id: "2"  # Maison
+      color: '#00FF00'
+      rotate: 0
+  - service: notify.mobile_app
+    data:
+      message: "John est arrivé"
+```
 
-### Tester l'add-on (local / debug)
-1. Build localement (hors HA):
+## 🛠️ Développement
+
+### Structure du projet
+```
+gubas/wled-icons/
+├── custom_components/wled_icons/   # Intégration HA
+│   ├── __init__.py                 # Setup integration
+│   ├── config_flow.py              # Config UI
+│   ├── manifest.json               # Metadata
+│   └── translations/               # i18n (en/fr)
+├── wled_icons/                     # Add-on
+│   ├── config.json                 # Add-on config
+│   ├── Dockerfile                  # Multi-arch build
+│   ├── app/
+│   │   ├── main.py                 # FastAPI server
+│   │   └── index.html              # Web UI
+│   └── requirements.txt
+├── .github/workflows/
+│   ├── validate.yml                # CI checks
+│   └── publish_addon.yml           # Docker publish GHCR
+├── repository.json                 # Add-on repository index
+└── README.md
+```
+
+### Test local (Docker)
 ```bash
-docker build -t wled_icons_test ./addon/wled_icons
+docker build -t wled_icons_test ./wled_icons
 docker run --rm -p 8234:8234 wled_icons_test
+# Ouvrez http://localhost:8234
 ```
-2. Ouvrez `http://localhost:8234` pour tester l'UI Ingress (même si hors Supervisor) ; utilisez les boutons pour envoyer des icônes au WLED host.
-3. Vérifier logs si erreur: `docker logs <container>` ou depuis Supervisor : Add-ons > WLED Icons > Logs.
 
-### Troubleshooting courant
--- L'intégration ne s'affiche pas: vérifiez la release GitHub et la valeur `version` dans `manifest.json`, puis exécutez la CI.
-- Add-on ne démarre pas: vérifier `config.json` (champs `slug`, `name`, `version`). Assurez-vous que `run.sh` est exécutable. Vérifiez les logs du conteneur dans Supervisor.
-- Ingress ne s'affiche pas: assurez-vous que l'add-on a `ingress: true` dans config.json et que l'utilisateur a accès (Supervisor configuration, network).
-- Images MDI manquantes: Si une icône MDI n'est pas trouvée, vérifiez le nom (ex: `weather-sunny`) et que le repo MDI est accessible. L'add-on retourne 404 si non trouvé.
-- Problèmes GHCR: si la CI ne publie pas l'image, vérifiez les logs d'Actions et si la permission pour `GITHUB_TOKEN` a le scope `packages:write` (par défaut c'est correct pour le même repo).
+### Versioning
 
-### Mise à jour rapide (workflow)
-- `@main`: développement
- - `git tag vX.Y.Z && git push --tags`: crée release et déclenche publication GHCR.
+**Add-on** : Incrémentez `wled_icons/config.json` → `version` à chaque changement pour forcer rebuild Home Assistant.
 
-### Licence
-Projet sous licence MIT. Voir fichier `LICENSE` à la racine.
+**Intégration** : Incrémentez `custom_components/wled_icons/manifest.json` → `version` puis tagguez Git `vX.Y.Z`.
 
-## Icônes Material Design (MDI)
-- Fournissez simplement le nom de l'icône (ex: `home`, `weather-sunny`) au service ou endpoint.
-- Une couleur hex optionnelle peut recoloriser toutes les zones non transparentes (ex: `#00AEEF`).
-- Les SVG sont récupérés depuis le dépôt officiel MDI puis rasterisés en 8x8 par l'add-on.
+**SemVer** :
+- **Major** : Breaking changes API
+- **Minor** : Nouvelles fonctionnalités
+- **Patch** : Bugfixes
 
-Autres sources:
-- SVG personnalisé (envoyé via endpoint `/show/svg` depuis un client externe si besoin — non exposé dans l'intégration pour l'instant).
-- PNG 8x8 ou GIF animé stockés dans `/config/www` et utilisés via services `show_static` / `show_gif`.
+### Publication
 
-## Rendu des icônes
-Le rendu est effectué par l'add-on (FastAPI) :
-- `GET /` UI Ingress (formulaire simple de test)
-- `POST /show/mdi` (JSON: `host`, `name`, `color?`)
-- `POST /show/png` (JSON: `host`, `png` base64)
-- `POST /show/gif` (JSON: `host`, `gif` base64, `fps?`, `loop?`)
+**Add-on** :
+1. Mise à jour `wled_icons/config.json` version
+2. Tag Git + GitHub Release
+3. CI `publish_addon.yml` publie sur GHCR multi-arch
 
-L'intégration Home Assistant appelle ces endpoints et expose des services plus simples qui utilisent la configuration enregistrée (host WLED, addon_url).
+**Intégration** :
+1. Mise à jour `manifest.json` version
+2. Mise à jour `CHANGELOG.md`
+3. Tag Git `vX.Y.Z` + GitHub Release
 
-## Historique
-Ancienne implémentation (script standalone + blueprint / shell_command) retirée pour réduire la maintenance. Utiliser exclusivement add-on + intégration.
+## 🐛 Dépannage
 
-## Module complémentaire (Add-on) + Intégration
+**Icône ne s'affiche pas** :
+- Vérifiez IP WLED dans config intégration
+- Testez WLED : `curl -X POST http://<IP>/json/state -d '{"on":true}'`
+- Vérifiez logs add-on : **Add-ons** → **WLED Icons** → **Logs**
+
+**UI add-on ne change pas** :
+- Version `config.json` incrémentée ?
+- Redémarrez add-on après rebuild
+- Videz cache navigateur (Ctrl+Shift+R)
+
+**Animation saccadée** :
+- Réglez paramètre `fps` (recommandé : 8-12 FPS pour 8x8)
+- Vérifiez latence réseau vers WLED
+
+**Icône mal orientée** :
+- Utilisez `rotate` (0/90/180/270) et `flip_h`/`flip_v`
+- Testez via UI web pour trouver orientation correcte
+
+## 📚 Ressources
+
+- [Galerie LaMetric Icons](https://developer.lametric.com/icons) : 1800+ icônes
+- [API WLED](https://kno.wled.ge/interfaces/json-api/) : Documentation JSON API
+- [Awtrix3](https://github.com/Blueforcer/awtrix3) : Inspiration LaMetric
+
+## 📝 Changelog
+
+Voir [CHANGELOG.md](CHANGELOG.md) pour l'historique complet des versions.
+
+## 🤝 Contribution
+
+Issues et PRs bienvenues sur GitHub : [gubas/wled-icons](https://github.com/gubas/wled-icons)
+
+## 📄 Licence
+
+MIT
 
 Pour éviter les soucis de dépendances (CairoSVG) dans Home Assistant, utilisez l'add-on et l'intégration fournie:
 
