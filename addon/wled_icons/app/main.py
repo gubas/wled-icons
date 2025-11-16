@@ -34,7 +34,16 @@ def recolor_nontransparent(img: Image.Image, rgb: tuple[int,int,int]) -> Image.I
     return out_img
 
 
-def frame_to_colors(frame: Image.Image) -> List[List[int]]:
+def frame_to_colors(frame: Image.Image, rotate: int = 0, flip_h: bool = False, flip_v: bool = False) -> List[List[int]]:
+    """Convert 8x8 image to WLED color array with optional transformations"""
+    # Apply transformations
+    if rotate:
+        frame = frame.rotate(-rotate, expand=False)  # Negative because PIL rotates counter-clockwise
+    if flip_h:
+        frame = frame.transpose(Image.FLIP_LEFT_RIGHT)
+    if flip_v:
+        frame = frame.transpose(Image.FLIP_TOP_BOTTOM)
+    
     pixels: List[List[int]] = []
     data = frame.getdata()
     for y in range(8):
@@ -90,6 +99,9 @@ class MdiRequest(BaseModel):
     host: str = Field(..., description="Adresse IP/host WLED")
     icon_id: str = Field(..., description="ID icône LaMetric, ex: 1486")
     color: Optional[str] = Field(None, description="Couleur hex pour recolorer")
+    rotate: int = Field(0, description="Rotation en degrés: 0, 90, 180, 270")
+    flip_h: bool = Field(False, description="Miroir horizontal")
+    flip_v: bool = Field(False, description="Miroir vertical")
 
 
 class SvgRequest(BaseModel):
@@ -107,23 +119,29 @@ class PngRequest(BaseModel):
 @app.post("/show/mdi")
 def show_mdi(req: MdiRequest):
     """Display LaMetric icon (8x8 JPG)"""
-    # Download 8x8 JPG from LaMetric
+    # Download 8x8 image from LaMetric (can be JPG or GIF)
     url = f"https://developer.lametric.com/content/apps/icon_thumbs/{req.icon_id}"
     try:
         r = requests.get(url, timeout=8)
         if not r.ok:
             raise HTTPException(status_code=404, detail=f"Icône LaMetric {req.icon_id} introuvable")
         
-        # Load JPG (already 8x8)
-        img = Image.open(BytesIO(r.content)).convert("RGBA")
+        # Load image (JPG or GIF - take first frame if GIF)
+        img = Image.open(BytesIO(r.content))
+        
+        # If GIF, take only the first frame
+        if hasattr(img, 'is_animated') and img.is_animated:
+            img.seek(0)  # Go to first frame
+        
+        img = img.convert("RGBA")
         
         # Recolor if needed
         if req.color:
             img = recolor_nontransparent(img, hex_to_rgb(req.color))
         
-        colors = frame_to_colors(img)
+        colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
         send_frame(req.host, colors)
-        return {"ok": True, "source": "lametric"}
+        return {"ok": True, "source": "lametric", "animated": hasattr(Image.open(BytesIO(r.content)), 'is_animated')}
     except requests.RequestException as e:
         raise HTTPException(status_code=502, detail=f"Erreur téléchargement: {str(e)}")
 
@@ -188,10 +206,15 @@ def root():
 <style>body{font-family:Arial;margin:1.2rem;}input,button{padding:.4rem;margin:.2rem;}#preview{display:grid;grid-template-columns:repeat(8,20px);grid-gap:2px;margin-top:1rem;} .px{width:20px;height:20px;background:#000;}</style>
 </head><body>
 <h1>WLED Icons</h1>
+<p><a href='https://developer.lametric.com/icons' target='_blank' style='color:#00AEEF'>🔍 Chercher des icônes LaMetric</a></p>
 <form id='f'>
 <label>Host WLED <input name='host' required placeholder='192.168.1.50'></label><br/>
-<label>Icône LaMetric ID <input name='mdi' placeholder='1486'></label>
-<label>Couleur <input name='color' placeholder='#00AEEF'></label>
+<label>Icône LaMetric ID <input name='mdi' placeholder='1486' onchange='previewIcon()'></label>
+<label>Couleur <input name='color' placeholder='#00AEEF'></label><br/>
+<div id='iconPreview' style='display:inline-block;vertical-align:middle;margin:0.5rem'></div><br/>
+<label>Rotation <select name='rotate'><option value='0'>0°</option><option value='90'>90°</option><option value='180'>180°</option><option value='270'>270°</option></select></label>
+<label><input type='checkbox' name='flip_h'> Miroir H</label>
+<label><input type='checkbox' name='flip_v'> Miroir V</label><br/>
 <button type='button' onclick='sendMdi()'>Afficher MDI</button><br/>
 <label>PNG 8x8 <input type='file' accept='image/png' id='png'></label>
 <button type='button' onclick='sendPng()'>Afficher PNG</button><br/>
@@ -205,8 +228,9 @@ def root():
 <script>
 function rgbToHex(r,g,b){return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');}
 function renderPreview(pixels){const prev=document.getElementById('preview');prev.innerHTML='';pixels.forEach(([r,g,b],i)=>{const d=document.createElement('div');d.className='px';d.style.background=rgbToHex(r,g,b);prev.appendChild(d);});}
+function previewIcon(){const id=document.querySelector('[name=mdi]').value;if(!id)return;const prev=document.getElementById('iconPreview');prev.innerHTML=`<img src='https://developer.lametric.com/content/apps/icon_thumbs/${id}' style='width:64px;height:64px;image-rendering:pixelated' onerror='this.src=""' />`;}
 const basePath=window.location.pathname.endsWith('/')?window.location.pathname.slice(0,-1):window.location.pathname;
-async function sendMdi(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let icon_id=fd.get('mdi');if(!host||!icon_id){alert('host et icon_id requis');return;}const color=fd.get('color')||null;let r=await fetch(basePath+'/show/mdi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,icon_id,color})});document.getElementById('msg').textContent='LaMetric status '+r.status;}
+async function sendMdi(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let icon_id=fd.get('mdi');if(!host||!icon_id){alert('host et icon_id requis');return;}const color=fd.get('color')||null;const rotate=parseInt(fd.get('rotate')||'0');const flip_h=fd.get('flip_h')==='on';const flip_v=fd.get('flip_v')==='on';let r=await fetch(basePath+'/show/mdi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,icon_id,color,rotate,flip_h,flip_v})});document.getElementById('msg').textContent='LaMetric status '+r.status;}
 async function sendPng(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let file=document.getElementById('png').files[0];if(!host||!file){alert('host et fichier');return;}let buf=await file.arrayBuffer();let bytes=new Uint8Array(buf);let b64=btoa(String.fromCharCode(...bytes));let r=await fetch(basePath+'/show/png',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,png:b64})});document.getElementById('msg').textContent='PNG status '+r.status;}
 async function sendGif(){const fd=new FormData(document.getElementById('f'));let host=fd.get('host');let file=document.getElementById('gif').files[0];if(!host||!file){alert('host et fichier');return;}let fps=fd.get('fps');let loop=parseInt(fd.get('loop')||'1');let buf=await file.arrayBuffer();let bytes=new Uint8Array(buf);let b64=btoa(String.fromCharCode(...bytes));let payload={host,gif:b64,loop};if(fps)payload.fps=parseInt(fps);let r=await fetch(basePath+'/show/gif',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});document.getElementById('msg').textContent='GIF status '+r.status;}
 </script></body></html>"""
