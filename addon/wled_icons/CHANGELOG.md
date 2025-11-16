@@ -1,5 +1,11 @@
 # Changelog - WLED Icons Add-on
 
+## [0.2.3] - 2025-11-16
+
+### Corrigé
+- Correction de la boucle infinie : la valeur -1 fonctionne maintenant correctement pour une animation en boucle continue
+- Remplacement de `range(max(1, loop))` par une logique `while True` avec condition de sortie
+
 ## [0.2.2] - 2025-11-16
 
 ### Modifié

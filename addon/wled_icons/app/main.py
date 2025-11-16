@@ -152,11 +152,17 @@ def show_mdi(req: MdiRequest):
             if req.fps and req.fps > 0:
                 delay = 1.0 / req.fps
                 durations = [delay] * len(frames)
-            for _ in range(max(1, req.loop)):
+            
+            # Loop handling: -1 = infinite, otherwise loop count
+            loop_count = 0
+            while True:
                 for f, d in zip(frames, durations):
                     colors = frame_to_colors(f, req.rotate, req.flip_h, req.flip_v)
                     send_frame(req.host, colors)
                     time.sleep(max(0.0, d))
+                loop_count += 1
+                if req.loop > 0 and loop_count >= req.loop:
+                    break
             return {"ok": True, "source": "lametric", "animated": True, "frames": len(frames)}
 
         # Static image path (JPG or non-animated GIF or animate=False)
@@ -217,11 +223,17 @@ def show_gif(req: GifRequest):
     if req.fps and req.fps > 0:
         delay = 1.0 / req.fps
         durations = [delay] * len(frames)
-    for _ in range(max(1, req.loop)):
+    
+    # Loop handling: -1 = infinite, otherwise loop count
+    loop_count = 0
+    while True:
         for f, d in zip(frames, durations):
             colors = frame_to_colors(f)
             send_frame(req.host, colors)
             time.sleep(max(0.0, d))
+        loop_count += 1
+        if req.loop > 0 and loop_count >= req.loop:
+            break
     return {"ok": True}
 
 
