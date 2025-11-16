@@ -1,0 +1,32 @@
+name: Build & Publish Add-on Image
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./addon/wled_icons
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/wled-icons-addons:${{ github.ref_name }}
+
+      - name: Create Release Artifact
+        run: |
+          echo "Add-on image published: ghcr.io/${{ github.repository_owner }}/wled-icons-addons:${{ github.ref_name }}"
