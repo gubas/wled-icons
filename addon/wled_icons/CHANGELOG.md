@@ -1,5 +1,10 @@
 # Changelog - WLED Icons Add-on
 
+## [0.4.7] - 2025-11-17
+
+### Corrigé
+- 🐛 **Bouton Sauvegarder** : Correction de l'appel de fonction (`openSaveDialog()` au lieu de `showSaveDialog()`)
+
 ## [0.4.6] - 2025-11-17
 
 ### Amélioré
