@@ -1,5 +1,12 @@
 # Changelog - WLED Icons Add-on
 
+## [0.4.6] - 2025-11-17
+
+### Amélioré
+- ✨ **Dialogue de sauvegarde** : L'ID généré est maintenant affiché avant la sauvegarde
+- 📋 **Copie d'ID** : Possibilité de copier l'ID directement depuis le dialogue en cliquant sur le champ ou le bouton 📋
+- 🔢 **Génération d'ID** : L'ID est pré-généré à l'ouverture du dialogue pour une meilleure visibilité
+
 ## [0.4.5] - 2025-11-17
 
 ### Corrigé
