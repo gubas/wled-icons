@@ -361,6 +361,8 @@
             const body = { host, icon_id, color, rotate, flip_h, flip_v, animate, loop };
             if (fpsStr) body.fps = parseInt(fpsStr);
             
+            console.log('[SEND_ICON] Sending request:', body);
+            
             try {
                 const r = await fetch(basePath + '/show/icon', {
                     method: 'POST',
@@ -368,12 +370,19 @@
                     body: JSON.stringify(body)
                 });
                 
+                console.log('[SEND_ICON] Response status:', r.status);
+                
                 if (r.ok) {
+                    const result = await r.json();
+                    console.log('[SEND_ICON] Success:', result);
                     showMsg('✅ Icône affichée avec succès');
                 } else {
-                    showMsg(`❌ Erreur ${r.status}`);
+                    const error = await r.text();
+                    console.error('[SEND_ICON] Error:', error);
+                    showMsg(`❌ Erreur ${r.status}: ${error}`);
                 }
             } catch (e) {
+                console.error('[SEND_ICON] Exception:', e);
                 showMsg('❌ Erreur de connexion');
             }
         }

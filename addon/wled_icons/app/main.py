@@ -11,7 +11,7 @@ import cairosvg
 import time
 import json
 
-app = FastAPI(title="WLED Icons Service", version="0.5.0")
+app = FastAPI(title="WLED Icons Service", version="0.5.1")
 
 # Data storage path
 DATA_DIR = Path("/data")
@@ -163,12 +163,20 @@ class PngRequest(BaseModel):
 def show_icon(req: IconRequest):
     """Display LaMetric icon (8x8 JPG) or custom WI icon"""
     
+    print(f"[SHOW_ICON] Received request for icon_id: {req.icon_id}")
+    
     # Check if it's a custom WI icon
     if req.icon_id.startswith("WI"):
+        print(f"[SHOW_ICON] Custom icon detected: {req.icon_id}")
         icons = load_custom_icons()
+        print(f"[SHOW_ICON] Loaded {len(icons)} icons from storage")
+        print(f"[SHOW_ICON] Available icons: {list(icons.keys())}")
+        
         if req.icon_id not in icons:
+            print(f"[SHOW_ICON] ERROR: Icon {req.icon_id} not found!")
             raise HTTPException(status_code=404, detail=f"Icône personnalisée {req.icon_id} introuvable")
         
+        print(f"[SHOW_ICON] Found icon {req.icon_id}, processing...")
         icon_data = icons[req.icon_id]
         
         # Handle both animated (frames) and static (grid) icons

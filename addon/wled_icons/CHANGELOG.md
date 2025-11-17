@@ -1,5 +1,13 @@
 # Changelog - WLED Icons Add-on
 
+## [0.5.1] - 2025-11-17
+
+### Amélioré
+- 🔍 **Logs serveur détaillés** : Suivi complet du traitement des icônes personnalisées (icon_id reçu, icônes disponibles, erreurs)
+- 📊 **Logs console client** : console.log pour toutes les requêtes et réponses d'envoi d'icônes
+- 🛠️ **Diagnostic amélioré** : Affichage de la liste des IDs disponibles en cas d'erreur 404
+- ⚠️ **Messages d'erreur explicites** : Détail des erreurs HTTP affiché dans l'interface utilisateur
+
 ## [0.5.0] - 2025-11-17
 
 ### Ajouté

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2025-11-17
+
+### Add-on
+
+#### Amélioré
+- 🔍 **Logs détaillés** : Ajout de logs côté serveur pour le traitement des icônes WI
+- 📊 **Debug client** : Console logs pour suivre les requêtes d'envoi d'icônes
+- 🛠️ **Diagnostic** : Affichage des icônes disponibles et détails des erreurs
+- ⚠️ **Messages d'erreur** : Affichage du détail des erreurs HTTP dans l'interface
+
 ## [0.5.0] - 2025-11-17
 
 ### Add-on
