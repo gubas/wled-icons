@@ -25,8 +25,8 @@
                 <label>Adresse WLED</label>
                 <input name='host' type='text' required placeholder='192.168.1.50' autocomplete='off'/>
                 
-                <label>ID Icône LaMetric</label>
-                <input name='icon_id' type='text' placeholder='1486' onchange='previewIcon()' autocomplete='off'/>
+                <label>ID Icône (LaMetric ou WI...)</label>
+                <input name='icon_id' type='text' placeholder='1486 ou WI1234567890123' onchange='previewIcon()' autocomplete='off'/>
                 
                 <div id='iconPreview'></div>
                 
@@ -305,14 +305,34 @@
             setTimeout(() => msg.textContent = '', 5000);
         }
         
-        function previewIcon() {
+        async function previewIcon() {
             const id = document.querySelector('[name=icon_id]').value;
             const prev = document.getElementById('iconPreview');
             if (!id) {
                 prev.innerHTML = '';
                 return;
             }
-            prev.innerHTML = `<img src='https://developer.lametric.com/content/apps/icon_thumbs/${id}' style='width:64px;height:64px' onerror='this.src=""' alt='Preview'/>`;
+            
+            // If it's a custom icon (starts with WI)
+            if (id.startsWith('WI')) {
+                try {
+                    const icons = await getSavedIcons();
+                    if (icons[id]) {
+                        const firstFrame = icons[id].frames ? icons[id].frames[0] : icons[id].grid;
+                        if (firstFrame) {
+                            const previewData = gridToDataUrl(firstFrame);
+                            prev.innerHTML = `<img src='${previewData}' style='width:64px;height:64px;image-rendering:pixelated' alt='Preview'/>`;
+                            return;
+                        }
+                    }
+                    prev.innerHTML = `<p style='color:var(--text-secondary);font-size:0.8rem'>⚠️ Icône ${id} introuvable</p>`;
+                } catch (error) {
+                    prev.innerHTML = `<p style='color:var(--error);font-size:0.8rem'>❌ Erreur de chargement</p>`;
+                }
+            } else {
+                // LaMetric icon
+                prev.innerHTML = `<img src='https://developer.lametric.com/content/apps/icon_thumbs/${id}' style='width:64px;height:64px' onerror='this.src=""' alt='Preview'/>`;
+            }
         }
         
         const basePath = window.location.pathname.endsWith('/') ? 
@@ -859,6 +879,7 @@
                         <div class='saved-icon-date' title='${icon.name}'>${icon.name} ${animBadge}</div>
                         <div class='saved-icon-date'>${date}</div>
                         <div class='icon-actions' onclick='event.stopPropagation()'>
+                            <button class='icon-action-btn' onclick='useIconInForm("${icon.id}")' title='Utiliser dans le formulaire'>📤</button>
                             <button class='icon-action-btn' onclick='copyIconId("${icon.id}")' title='Copier l\'ID'>📋</button>
                             <button class='icon-action-btn delete' onclick='deleteIconFromLibrary("${icon.id}")' title='Supprimer'>🗑️</button>
                         </div>
@@ -914,6 +935,15 @@
                     // Error already shown in deleteIconFromServer
                 }
             }
+        }
+        
+        function useIconInForm(iconId) {
+            // Put the icon ID in the main form and trigger preview
+            document.querySelector('[name=icon_id]').value = iconId;
+            previewIcon();
+            showMsg(`✅ ID ${iconId} chargé dans le formulaire`);
+            // Scroll to top to see the form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
         function copyIconId(iconId) {

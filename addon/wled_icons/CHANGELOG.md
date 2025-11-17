@@ -1,5 +1,18 @@
 # Changelog - WLED Icons Add-on
 
+## [0.5.0] - 2025-11-17
+
+### Ajouté
+- ✨ **Intégration complète des icônes personnalisées** : Les icônes WI... peuvent être utilisées dans le formulaire principal
+- 🔍 **Preview intelligente** : La fonction `previewIcon()` détecte automatiquement si c'est une icône LaMetric ou personnalisée
+- 📤 **Bouton "Utiliser dans le formulaire"** : Nouveau bouton dans la bibliothèque pour utiliser l'icône en un clic
+- 🎯 **Auto-scroll** : Navigation automatique vers le formulaire après sélection
+
+### Amélioré
+- 🏷️ **Clarté du formulaire** : Le label indique "ID Icône (LaMetric ou WI...)"
+- 📋 **Trois actions par icône** : 📤 Utiliser, 📋 Copier ID, 🗑️ Supprimer
+- ⚠️ **Gestion des erreurs** : Message explicite si l'icône WI... n'existe pas
+
 ## [0.4.9] - 2025-11-17
 
 ### Corrigé

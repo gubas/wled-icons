@@ -11,7 +11,7 @@ import cairosvg
 import time
 import json
 
-app = FastAPI(title="WLED Icons Service", version="0.4.9")
+app = FastAPI(title="WLED Icons Service", version="0.5.0")
 
 # Data storage path
 DATA_DIR = Path("/data")

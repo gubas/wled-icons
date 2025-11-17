@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2025-11-17
+
+### Add-on
+
+#### Ajouté
+- ✨ **Support des icônes personnalisées dans le formulaire** : Les icônes WI... peuvent maintenant être utilisées directement
+- 🔍 **Preview intelligente** : Détection automatique du type d'icône (LaMetric ou WI...) avec aperçu adapté
+- 📤 **Bouton "Utiliser dans le formulaire"** : Permet d'utiliser une icône de la bibliothèque en un clic
+- 🎯 **Navigation automatique** : Scroll vers le formulaire après sélection d'une icône
+
+#### Amélioré
+- 🏷️ **Label du champ ID** : Indique maintenant qu'on peut utiliser les deux types d'icônes
+- 📋 **Gestion des erreurs** : Message si l'icône personnalisée n'est pas trouvée
+- 🎨 **UX de la bibliothèque** : Trois boutons par icône (📤 Utiliser, 📋 Copier, 🗑️ Supprimer)
+
 ## [0.4.9] - 2025-11-17
 
 ### Add-on
