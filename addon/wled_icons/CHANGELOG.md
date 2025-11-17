@@ -1,5 +1,15 @@
 # Changelog - WLED Icons Add-on
 
+## [0.5.4] - 2025-11-17
+
+### Corrigé
+- 🐛 **BUG MAJEUR CORRIGÉ** : Les icônes personnalisées WI s'affichent enfin sur les panneaux WLED !
+- 📦 **Format de données** : Aplatissement de la matrice 8x8 en tableau linéaire de 64 pixels [[R,G,B], ...]
+- 🔍 **Problème identifié** : WLED attend un tableau plat de 64 éléments, pas une matrice 8x8 imbriquée
+- ✅ **Cohérence** : Format identique pour icones LaMetric et WI (64 pixels au lieu de 8 rangées de 8)
+- 🎬 **Animations OK** : Correction appliquée aussi aux animations multi-frames
+- 🔄 **Transformations optimisées** : Réorganisation du code pour appliquer rotations/miroirs efficacement
+
 ## [0.5.3] - 2025-11-17
 
 ### Amélioré

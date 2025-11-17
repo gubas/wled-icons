@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.4] - 2025-11-17
+
+### Add-on
+
+#### Corrigé
+- 🐛 **CORRECTION CRITIQUE** : Les icônes WI s'affichent maintenant correctement sur WLED !
+- 📦 **Format de tableau** : Conversion de la matrice 8x8 en tableau plat de 64 pixels (format WLED)
+- ✅ **Alignement avec LaMetric** : Les icônes WI utilisent maintenant le même format que les icônes LaMetric (64x3)
+- 🎬 **Animations** : Correction du format pour les animations frame par frame également
+- 🔄 **Transformations** : Gestion correcte des rotations/miroirs pour les deux formats
+
 ## [0.5.3] - 2025-11-17
 
 ### Add-on

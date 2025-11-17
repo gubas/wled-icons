@@ -11,7 +11,7 @@ import cairosvg
 import time
 import json
 
-app = FastAPI(title="WLED Icons Service", version="0.5.3")
+app = FastAPI(title="WLED Icons Service", version="0.5.4")
 
 # Data storage path
 DATA_DIR = Path("/data")
@@ -210,24 +210,24 @@ def show_icon(req: IconRequest):
             
             while True:
                 for grid in frames_data:
-                    # Convert hex grid to RGB values
-                    colors = []
-                    for row in grid:
-                        row_colors = []
-                        for hex_color in row:
-                            rgb = hex_to_rgb(hex_color)
-                            row_colors.append(list(rgb))
-                        colors.append(row_colors)
-                    
                     # Apply transformations if needed
                     if req.rotate or req.flip_h or req.flip_v:
+                        # Build 8x8 image for transformations
                         img = Image.new("RGB", (8, 8))
                         pixels = img.load()
                         for y in range(8):
                             for x in range(8):
-                                pixels[x, y] = tuple(colors[y][x])
+                                rgb = hex_to_rgb(grid[y][x])
+                                pixels[x, y] = rgb
                         
                         colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
+                    else:
+                        # Flatten 8x8 grid to 64-pixel array
+                        colors = []
+                        for row in grid:
+                            for hex_color in row:
+                                rgb = hex_to_rgb(hex_color)
+                                colors.append(list(rgb))
                     
                     send_frame(req.host, colors)
                     time.sleep(delay)
@@ -240,26 +240,29 @@ def show_icon(req: IconRequest):
         else:
             # Static icon or single frame
             grid = frames_data[0]
-            colors = []
-            for row in grid:
-                row_colors = []
-                for hex_color in row:
-                    rgb = hex_to_rgb(hex_color)
-                    row_colors.append(list(rgb))
-                colors.append(row_colors)
             
             # Apply transformations if needed
             if req.rotate or req.flip_h or req.flip_v:
+                # Build 8x8 image for transformations
                 img = Image.new("RGB", (8, 8))
                 pixels = img.load()
                 for y in range(8):
                     for x in range(8):
-                        pixels[x, y] = tuple(colors[y][x])
+                        rgb = hex_to_rgb(grid[y][x])
+                        pixels[x, y] = rgb
                 
                 colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
+            else:
+                # Flatten 8x8 grid to 64-pixel array
+                colors = []
+                for row in grid:
+                    for hex_color in row:
+                        rgb = hex_to_rgb(hex_color)
+                        colors.append(list(rgb))
             
             print(f"[SHOW_ICON] About to send frame to {req.host}")
-            print(f"[SHOW_ICON] Colors sample (first row): {colors[0] if colors else 'empty'}")
+            print(f"[SHOW_ICON] Colors array length: {len(colors)} (should be 64)")
+            print(f"[SHOW_ICON] First pixel: {colors[0] if colors else 'empty'}")
             send_frame(req.host, colors)
             print(f"[SHOW_ICON] Frame sent successfully")
             return {"ok": True, "source": "custom"}
