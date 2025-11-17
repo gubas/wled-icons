@@ -11,7 +11,7 @@ import cairosvg
 import time
 import json
 
-app = FastAPI(title="WLED Icons Service", version="0.4.8")
+app = FastAPI(title="WLED Icons Service", version="0.4.9")
 
 # Data storage path
 DATA_DIR = Path("/data")
@@ -374,7 +374,11 @@ def styles():
 @app.get("/api/icons")
 def get_custom_icons():
     """Get all custom icons"""
-    return load_custom_icons()
+    icons = load_custom_icons()
+    # Add the ID to each icon object
+    for icon_id, icon_data in icons.items():
+        icon_data['id'] = icon_id
+    return icons
 
 
 @app.get("/api/icons/{icon_id}")

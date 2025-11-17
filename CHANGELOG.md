@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.9] - 2025-11-17
+
+### Add-on
+
+#### Corrigé
+- 🐛 **Affichage de l'ID** : L'ID n'apparaissait pas dans la bibliothèque ("undefined") - l'API ajoute maintenant l'ID dans chaque objet icône
+- ✨ **Style du champ ID généré** : Le champ d'ID dans le dialogue de sauvegarde utilise maintenant une police monospace, est centré et bien visible
+- 🎨 **Amélioration visuelle** : Police Courier New, couleur primaire, padding généreux pour le champ d'ID
+
 ## [0.4.8] - 2025-11-17
 
 ### Add-on

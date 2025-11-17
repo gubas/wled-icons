@@ -698,6 +698,23 @@ button:active {
     display: block;
 }
 
+.generated-id-input {
+    flex: 1;
+    background: var(--input-bg) !important;
+    color: var(--primary) !important;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    user-select: all;
+    text-align: center;
+    padding: 0.75rem !important;
+    font-size: 0.9rem;
+}
+
+.generated-id-input:hover {
+    background: var(--bg-secondary) !important;
+}
+
 .dialog-overlay {
     position: fixed;
     top: 0;

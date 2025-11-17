@@ -1,5 +1,12 @@
 # Changelog - WLED Icons Add-on
 
+## [0.4.9] - 2025-11-17
+
+### Corrigé
+- 🐛 **Bug ID "undefined"** : L'API `/api/icons` ajoute maintenant le champ `id` dans chaque objet icône retourné
+- ✨ **Champ ID généré** : Style amélioré avec police monospace (Courier New), texte centré et couleur primaire
+- 🎨 **Visibilité** : Le champ d'ID dans le dialogue est maintenant clairement visible et lisible
+
 ## [0.4.8] - 2025-11-17
 
 ### Amélioré
