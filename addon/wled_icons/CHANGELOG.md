@@ -1,5 +1,13 @@
 # Changelog - WLED Icons Add-on
 
+## [0.4.8] - 2025-11-17
+
+### Amélioré
+- ✨ **Visibilité de l'ID** : L'ID des icônes est maintenant affiché avec un fond gris, padding et icône 📋
+- 📋 **Copie facilitée** : Cliquer sur l'ID le copie directement dans le presse-papier
+- 🎯 **Meilleure UX** : Effet hover sur l'ID et tooltip explicatif
+- 🔤 **Sélection manuelle** : L'ID peut aussi être sélectionné et copié manuellement
+
 ## [0.4.7] - 2025-11-17
 
 ### Corrigé

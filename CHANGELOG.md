@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.8] - 2025-11-17
+
+### Add-on
+
+#### Amélioré
+- ✨ **Affichage de l'ID** : L'ID est maintenant très visible avec un fond gris et l'icône 📋
+- 📋 **Copie d'ID facilitée** : Cliquer directement sur l'ID le copie dans le presse-papier
+- 🎯 **UX améliorée** : Effet de survol et tooltip "Cliquer pour copier l'ID"
+- 🔤 **Sélection de texte** : L'ID peut aussi être sélectionné manuellement (user-select: all)
+
 ## [0.4.7] - 2025-11-17
 
 ### Add-on

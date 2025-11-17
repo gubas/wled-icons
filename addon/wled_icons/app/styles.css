@@ -527,6 +527,16 @@ button:active {
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--primary);
+    background: var(--input-bg);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: all;
+}
+
+.saved-icon-id:hover {
+    background: var(--bg-secondary);
 }
 
 .saved-icon-date {

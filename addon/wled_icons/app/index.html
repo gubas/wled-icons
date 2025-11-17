@@ -855,11 +855,11 @@
                 return `
                     <div class='saved-icon-item' onclick='loadIconFromLibrary("${icon.id}")'>
                         <img src='${previewData}' class='saved-icon-preview' alt='${icon.name}'/>
-                        <div class='saved-icon-id'>${icon.id}</div>
+                        <div class='saved-icon-id' onclick='event.stopPropagation(); copyIconId("${icon.id}")' title='Cliquer pour copier l\'ID'>📋 ${icon.id}</div>
                         <div class='saved-icon-date' title='${icon.name}'>${icon.name} ${animBadge}</div>
                         <div class='saved-icon-date'>${date}</div>
                         <div class='icon-actions' onclick='event.stopPropagation()'>
-                            <button class='icon-action-btn' onclick='useIconId("${icon.id}")' title='Utiliser l\\'ID'>📋</button>
+                            <button class='icon-action-btn' onclick='copyIconId("${icon.id}")' title='Copier l\'ID'>📋</button>
                             <button class='icon-action-btn delete' onclick='deleteIconFromLibrary("${icon.id}")' title='Supprimer'>🗑️</button>
                         </div>
                     </div>
@@ -916,7 +916,7 @@
             }
         }
         
-        function useIconId(iconId) {
+        function copyIconId(iconId) {
             // Copy icon ID to clipboard
             navigator.clipboard.writeText(iconId).then(() => {
                 showMsg(`✅ ID copié : ${iconId}`);
