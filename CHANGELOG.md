@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.5] - 2025-11-17
+
+### Add-on
+
+#### Amélioré
+- 🎨 **Affichage bibliothèque** : IDs raccourcis (6 derniers chiffres) pour plus de lisibilité
+- 🎭 **Noms intelligents** : 🎨 au lieu de "Sans nom" pour les icônes non nommées
+- 💬 **Tooltip ID complet** : Survol affiche l'ID complet même si affichage court
+- 🔤 **Style amélioré** : Police monospace, espacement lettres, effet zoom au survol
+- ✅ **Copie complète** : Cliquer copie toujours l'ID complet (pas la version courte)
+
 ## [0.5.4] - 2025-11-17
 
 ### Add-on

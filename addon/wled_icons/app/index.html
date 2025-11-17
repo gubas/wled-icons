@@ -881,11 +881,16 @@
                 const frameCount = icon.frames ? icon.frames.length : 1;
                 const animBadge = frameCount > 1 ? `<span style='color:var(--primary);font-size:0.7rem'>🎬 ${frameCount}</span>` : '';
                 
+                // Show only last 6 digits of ID for display
+                const shortId = icon.id.slice(-6);
+                // Use emoji if no name, otherwise show name
+                const displayName = icon.name === 'Sans nom' ? '🎨' : icon.name;
+                
                 return `
                     <div class='saved-icon-item' onclick='loadIconFromLibrary("${icon.id}")'>
                         <img src='${previewData}' class='saved-icon-preview' alt='${icon.name}'/>
-                        <div class='saved-icon-id' onclick='event.stopPropagation(); copyIconId("${icon.id}")' title='Cliquer pour copier l\'ID'>📋 ${icon.id}</div>
-                        <div class='saved-icon-date' title='${icon.name}'>${icon.name} ${animBadge}</div>
+                        <div class='saved-icon-id' onclick='event.stopPropagation(); copyIconId("${icon.id}")' title='${icon.id} - Cliquer pour copier'>📋 ${shortId}</div>
+                        <div class='saved-icon-date' title='${icon.name}'>${displayName} ${animBadge}</div>
                         <div class='saved-icon-date'>${date}</div>
                         <div class='icon-actions' onclick='event.stopPropagation()'>
                             <button class='icon-action-btn' onclick='useIconInForm("${icon.id}")' title='Utiliser dans le formulaire'>📤</button>

@@ -524,19 +524,22 @@ button:active {
 }
 
 .saved-icon-id {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
     color: var(--primary);
     background: var(--input-bg);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
     user-select: all;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
 }
 
 .saved-icon-id:hover {
     background: var(--bg-secondary);
+    transform: scale(1.05);
 }
 
 .saved-icon-date {

@@ -1,5 +1,15 @@
 # Changelog - WLED Icons Add-on
 
+## [0.5.5] - 2025-11-17
+
+### Amélioré
+- 🎨 **IDs raccourcis** : Affichage des 6 derniers chiffres seulement dans la bibliothèque (ex: 412379 au lieu de WI1763412379843244)
+- 💬 **Tooltip informatif** : L'ID complet apparaît au survol avec mention "Cliquer pour copier"
+- 🎭 **Sans nom → 🎨** : Remplacement du texte "Sans nom" par l'émoji 🎨 pour un affichage plus compact
+- 🔤 **Typographie** : Police monospace Courier New avec espacement de lettres pour meilleure lisibilité
+- ✨ **Effet visuel** : Transform scale(1.05) au survol de l'ID pour feedback interactif
+- ✅ **Fonctionnalité préservée** : Clic copie toujours l'ID WI complet (pas la version affichée)
+
 ## [0.5.4] - 2025-11-17
 
 ### Corrigé
