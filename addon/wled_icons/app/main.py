@@ -11,7 +11,7 @@ import cairosvg
 import time
 import json
 
-app = FastAPI(title="WLED Icons Service", version="0.4.3")
+app = FastAPI(title="WLED Icons Service", version="0.4.4")
 
 # Data storage path
 DATA_DIR = Path("/data")
@@ -20,6 +20,11 @@ ICONS_FILE = DATA_DIR / "custom_icons.json"
 # HTML file path
 HTML_FILE = Path(__file__).parent / "index.html"
 CSS_FILE = Path(__file__).parent / "styles.css"
+
+print(f"[STARTUP] Data directory: {DATA_DIR}")
+print(f"[STARTUP] Icons file: {ICONS_FILE}")
+print(f"[STARTUP] HTML file: {HTML_FILE}")
+print(f"[STARTUP] CSS file: {CSS_FILE}")
 
 # --- Icon Storage Helpers ---
 
@@ -384,12 +389,17 @@ def get_custom_icon(icon_id: str):
 @app.post("/api/icons/{icon_id}")
 def save_custom_icon(icon_id: str, icon: CustomIcon):
     """Save or update a custom icon"""
+    print(f"[API] Saving icon: {icon_id}")
+    print(f"[API] Icon data: {icon.model_dump()}")
+    
     if not icon_id.startswith("WI"):
         raise HTTPException(status_code=400, detail="Icon ID must start with 'WI'")
     
     icons = load_custom_icons()
     icons[icon_id] = icon.model_dump()
     save_custom_icons(icons)
+    
+    print(f"[API] Icon {icon_id} saved successfully")
     return {"ok": True, "id": icon_id}
 
 

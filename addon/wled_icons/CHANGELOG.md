@@ -1,5 +1,14 @@
 # Changelog - WLED Icons Add-on
 
+## [0.4.4] - 2025-11-17
+
+### Amélioré
+- 🔍 **Logs de débogage détaillés** : Ajout de console.log pour tracer les requêtes de sauvegarde
+- 📋 Logs serveur Python pour chaque opération de sauvegarde/suppression d'icône
+- 🚀 Logs au démarrage du serveur affichant les chemins critiques (DATA_DIR, ICONS_FILE, etc.)
+- 🛠️ Message d'erreur amélioré invitant à ouvrir la console (F12) pour diagnostic
+- 📊 Affichage du statut HTTP et des données envoyées dans la console pour faciliter le débogage
+
 ## [0.4.3] - 2025-11-17
 
 ### Corrigé

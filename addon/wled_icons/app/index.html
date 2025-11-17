@@ -729,19 +729,22 @@
         
         async function saveIconToServer(iconId, iconData) {
             try {
+                console.log('Saving icon:', iconId, iconData);
                 const response = await fetch(`/api/icons/${iconId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(iconData)
                 });
+                console.log('Response status:', response.status);
                 if (!response.ok) {
                     const errorText = await response.text();
+                    console.error('Error response:', errorText);
                     throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
                 return await response.json();
             } catch (error) {
                 console.error('Error saving icon:', error);
-                alert(`❌ Erreur de sauvegarde\n\n${error.message}\n\nVérifiez que le serveur est accessible.`);
+                alert(`❌ Erreur de sauvegarde\n\n${error.message}\n\nVérifiez que le serveur est accessible.\n\nDétails dans la console (F12)`);
                 throw error;
             }
         }
