@@ -80,7 +80,7 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
                 payload["fps"] = fps
             
             async with aiohttp.ClientSession() as session:
-                async with session.post(f"{addon_url}/show/mdi", json=payload, timeout=30) as resp:
+                async with session.post(f"{addon_url}/show/icon", json=payload, timeout=30) as resp:
                     if resp.status >= 400:
                         text = await resp.text()
                         raise RuntimeError(f"Addon error {resp.status}: {text}")

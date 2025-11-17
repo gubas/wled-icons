@@ -1,18 +1,46 @@
 from fastapi import FastAPI, HTTPException, Response
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pathlib import Path
 import requests
 from io import BytesIO
 from PIL import Image, ImageSequence, ImageDraw, ImageFilter
 import cairosvg
 import time
+import json
 
-app = FastAPI(title="WLED Icons Service", version="0.2.0")
+app = FastAPI(title="WLED Icons Service", version="0.4.0")
+
+# Data storage path
+DATA_DIR = Path("/data")
+ICONS_FILE = DATA_DIR / "custom_icons.json"
 
 # HTML file path
 HTML_FILE = Path(__file__).parent / "index.html"
+
+# --- Icon Storage Helpers ---
+
+def load_custom_icons() -> Dict:
+    """Load custom icons from persistent storage"""
+    if not ICONS_FILE.exists():
+        return {}
+    try:
+        with open(ICONS_FILE, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error loading icons: {e}")
+        return {}
+
+def save_custom_icons(icons: Dict):
+    """Save custom icons to persistent storage"""
+    DATA_DIR.mkdir(exist_ok=True)
+    try:
+        with open(ICONS_FILE, 'w') as f:
+            json.dump(icons, f, indent=2)
+    except Exception as e:
+        print(f"Error saving icons: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to save: {e}")
 
 # --- Helpers ---
 
@@ -100,7 +128,7 @@ def rasterize_svg(svg_bytes: bytes, color: Optional[str]) -> Image.Image:
 
 
 # --- Models ---
-class MdiRequest(BaseModel):
+class IconRequest(BaseModel):
     host: str = Field(..., description="Adresse IP/host WLED")
     icon_id: str = Field(..., description="ID icône LaMetric, ex: 1486")
     color: Optional[str] = Field(None, description="Couleur hex pour recolorer")
@@ -124,9 +152,85 @@ class PngRequest(BaseModel):
 
 
 # --- Endpoints ---
-@app.post("/show/mdi")
-def show_mdi(req: MdiRequest):
-    """Display LaMetric icon (8x8 JPG)"""
+@app.post("/show/icon")
+def show_icon(req: IconRequest):
+    """Display LaMetric icon (8x8 JPG) or custom WI icon"""
+    
+    # Check if it's a custom WI icon
+    if req.icon_id.startswith("WI"):
+        icons = load_custom_icons()
+        if req.icon_id not in icons:
+            raise HTTPException(status_code=404, detail=f"Icône personnalisée {req.icon_id} introuvable")
+        
+        icon_data = icons[req.icon_id]
+        
+        # Handle both animated (frames) and static (grid) icons
+        frames_data = icon_data.get("frames") or [icon_data.get("grid")]
+        fps = icon_data.get("fps", 8)
+        
+        # If it's animated and animation is requested
+        if len(frames_data) > 1 and req.animate:
+            # Override FPS if specified
+            if req.fps and req.fps > 0:
+                fps = req.fps
+            
+            delay = 1.0 / fps
+            loop_count = 0
+            
+            while True:
+                for grid in frames_data:
+                    # Convert hex grid to RGB values
+                    colors = []
+                    for row in grid:
+                        row_colors = []
+                        for hex_color in row:
+                            rgb = hex_to_rgb(hex_color)
+                            row_colors.append(list(rgb))
+                        colors.append(row_colors)
+                    
+                    # Apply transformations if needed
+                    if req.rotate or req.flip_h or req.flip_v:
+                        img = Image.new("RGB", (8, 8))
+                        pixels = img.load()
+                        for y in range(8):
+                            for x in range(8):
+                                pixels[x, y] = tuple(colors[y][x])
+                        
+                        colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
+                    
+                    send_frame(req.host, colors)
+                    time.sleep(delay)
+                
+                loop_count += 1
+                if req.loop > 0 and loop_count >= req.loop:
+                    break
+            
+            return {"ok": True, "frames": len(frames_data), "fps": fps}
+        else:
+            # Static icon or single frame
+            grid = frames_data[0]
+            colors = []
+            for row in grid:
+                row_colors = []
+                for hex_color in row:
+                    rgb = hex_to_rgb(hex_color)
+                    row_colors.append(list(rgb))
+                colors.append(row_colors)
+            
+            # Apply transformations if needed
+            if req.rotate or req.flip_h or req.flip_v:
+                img = Image.new("RGB", (8, 8))
+                pixels = img.load()
+                for y in range(8):
+                    for x in range(8):
+                        pixels[x, y] = tuple(colors[y][x])
+                
+                colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
+            
+            send_frame(req.host, colors)
+            return {"ok": True}
+    
+    # LaMetric icon handling (original code)
     # Download 8x8 image from LaMetric (can be JPG or GIF)
     url = f"https://developer.lametric.com/content/apps/icon_thumbs/{req.icon_id}"
     try:
@@ -206,6 +310,15 @@ class GifRequest(BaseModel):
     loop: int = Field(1, description="Nombre de boucles")
 
 
+class CustomIcon(BaseModel):
+    name: str
+    frames: Optional[List[List[List[str]]]] = Field(None, description="Multiple frames for animation")
+    grid: Optional[List[List[str]]] = Field(None, description="Single frame (legacy)")
+    fps: Optional[int] = Field(8, description="FPS for animation")
+    created: str
+    modified: str
+
+
 @app.post("/show/gif")
 def show_gif(req: GifRequest):
     try:
@@ -241,3 +354,78 @@ def show_gif(req: GifRequest):
 def root():
     """Serve the HTML UI"""
     return FileResponse(HTML_FILE, media_type="text/html")
+
+
+# --- Custom Icons API ---
+
+@app.get("/api/icons")
+def get_custom_icons():
+    """Get all custom icons"""
+    return load_custom_icons()
+
+
+@app.get("/api/icons/{icon_id}")
+def get_custom_icon(icon_id: str):
+    """Get a specific custom icon"""
+    icons = load_custom_icons()
+    if icon_id not in icons:
+        raise HTTPException(status_code=404, detail="Icon not found")
+    return icons[icon_id]
+
+
+@app.post("/api/icons/{icon_id}")
+def save_custom_icon(icon_id: str, icon: CustomIcon):
+    """Save or update a custom icon"""
+    if not icon_id.startswith("WI"):
+        raise HTTPException(status_code=400, detail="Icon ID must start with 'WI'")
+    
+    icons = load_custom_icons()
+    icons[icon_id] = icon.model_dump()
+    save_custom_icons(icons)
+    return {"ok": True, "id": icon_id}
+
+
+@app.delete("/api/icons/{icon_id}")
+def delete_custom_icon(icon_id: str):
+    """Delete a custom icon"""
+    icons = load_custom_icons()
+    if icon_id not in icons:
+        raise HTTPException(status_code=404, detail="Icon not found")
+    
+    del icons[icon_id]
+    save_custom_icons(icons)
+    return {"ok": True, "deleted": icon_id}
+
+
+@app.post("/api/icons/{icon_id}/display")
+def display_custom_icon(icon_id: str, host: str, rotate: int = 0, flip_h: bool = False, flip_v: bool = False):
+    """Display a custom icon on WLED"""
+    icons = load_custom_icons()
+    if icon_id not in icons:
+        raise HTTPException(status_code=404, detail="Icon not found")
+    
+    icon_data = icons[icon_id]
+    grid = icon_data["grid"]
+    
+    # Convert hex grid to RGB values
+    colors = []
+    for row in grid:
+        row_colors = []
+        for hex_color in row:
+            rgb = hex_to_rgb(hex_color)
+            row_colors.append(list(rgb))
+        colors.append(row_colors)
+    
+    # Apply transformations if needed
+    if rotate or flip_h or flip_v:
+        # Create temporary image for transformations
+        img = Image.new("RGB", (8, 8))
+        pixels = img.load()
+        for y in range(8):
+            for x in range(8):
+                pixels[x, y] = tuple(colors[y][x])
+        
+        colors = frame_to_colors(img, rotate, flip_h, flip_v)
+    
+    send_frame(host, colors)
+    return {"ok": True}

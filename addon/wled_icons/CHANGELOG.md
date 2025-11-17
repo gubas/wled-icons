@@ -1,5 +1,56 @@
 # Changelog - WLED Icons Add-on
 
+## [0.4.0] - 2025-11-17
+
+### Ajouté
+- 🎬 **Animations frame par frame** : Créez des icônes animées en dessinant chaque image
+- ➕ Ajouter des frames pour créer une animation complète
+- 📋 Dupliquer la frame courante pour faciliter l'édition
+- 🗑️ Supprimer une frame (minimum 1 frame)
+- ▶️ Prévisualisation d'animation en temps réel (canvas 64x64px)
+- Contrôle du FPS : 1-30 images par seconde (recommandé: 8)
+- Liste de miniatures cliquables pour naviguer entre les frames
+- Compteur "Frame 1/5" pour voir la position actuelle
+- Badge 🎬 avec nombre de frames dans la bibliothèque
+- 💾 **Stockage persistant côté serveur** : Les icônes WI sont maintenant sauvegardées dans `/data/custom_icons.json`
+- Bibliothèque partagée entre tous les appareils (pas seulement le navigateur)
+- Backup automatique avec Home Assistant
+- API REST complète pour les icônes personnalisées :
+  - `GET /api/icons` - Liste toutes les icônes
+  - `GET /api/icons/{icon_id}` - Récupère une icône spécifique
+  - `POST /api/icons/{icon_id}` - Sauvegarde ou met à jour une icône
+  - `DELETE /api/icons/{icon_id}` - Supprime une icône
+  - `POST /api/icons/{icon_id}/display` - Affiche une icône sur WLED
+
+### Modifié
+- **Breaking Change** : Endpoint `/show/mdi` renommé en `/show/icon`
+- **Breaking Change** : Modèle `MdiRequest` renommé en `IconRequest`
+- Champs formulaire renommés : `mdi` → `icon_id`, `mdi_fps` → `icon_fps`, `mdi_loop` → `icon_loop`
+- Clés localStorage renommées : `wled_mdi` → `wled_icon_id`, etc.
+- Format de stockage : `frames` (array de grilles) + `fps` au lieu de `grid` simple
+- Les icônes WI animées affichent frame par frame avec le FPS spécifié
+- Modèle `CustomIcon` support `frames` (optionnel) + `grid` (legacy, optionnel) + `fps`
+
+### Amélioré
+- Les icônes ne sont plus perdues lors du vidage du cache navigateur
+- Les transformations (rotation, miroirs) s'appliquent à chaque frame des animations
+- Compatibilité ascendante : les anciennes icônes avec `grid` fonctionnent toujours
+- Les animations WI peuvent maintenant utiliser `animate`, `fps`, `loop` (incluant `-1` pour infini)
+- Message de sauvegarde indique le nombre de frames : "✅ Icône sauvegardée : WI123 (3 frames)"
+- Message de chargement indique aussi le nombre de frames
+
+## [0.3.0] - 2025-11-17
+
+### Ajouté
+- 🎨 **Éditeur de pixel art 8x8** : Créez vos propres icônes directement dans l'interface
+- Palette de 20 couleurs prédéfinies + sélecteur de couleur personnalisé
+- Dessin au clic et au glissement (souris + tactile)
+- Sauvegarde automatique dans localStorage
+- Export PNG 8x8 pour téléchargement
+- Envoi direct sur WLED depuis l'éditeur
+- Boutons Effacer/Remplir pour édition rapide
+- Support mobile et tablette complet
+
 ## [0.2.5] - 2025-11-16
 
 ### Optimisé

@@ -5,6 +5,64 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-11-17
+
+### Intégration Home Assistant
+
+#### Ajouté
+- Support des animations frame par frame dans l'éditeur pixel art
+- Stockage persistant des icônes WI côté serveur (dans `/data/custom_icons.json`)
+- Bibliothèque d'icônes partagée entre tous les appareils
+- Les icônes WI peuvent maintenant contenir plusieurs frames animées
+- Prévisualisation d'animation en temps réel dans l'éditeur
+- Badge indiquant le nombre de frames dans la bibliothèque
+- Support complet des paramètres `animate`, `fps`, `loop` pour les icônes WI animées
+
+#### Modifié
+- **API Breaking Change** : Renommage de tous les endpoints et variables MDI en icon/lametric
+  - Endpoint `/show/mdi` → `/show/icon`
+  - Modèle `MdiRequest` → `IconRequest`
+  - Champs formulaire `mdi`, `mdi_fps`, `mdi_loop` → `icon_id`, `icon_fps`, `icon_loop`
+  - Clés localStorage `wled_mdi*` → `wled_icon*`
+- Format de stockage des icônes : support `frames` (array) en plus de `grid` (legacy)
+- L'éditeur sauvegarde maintenant toutes les frames au lieu d'une seule grille
+
+#### Amélioré
+- Les icônes WI sont maintenant sauvegardées côté serveur au lieu du localStorage
+- Backup automatique avec Home Assistant (dossier `/data`)
+- Pas de perte d'icônes lors du vidage du cache navigateur
+- Interface d'animation complète : ajout/duplication/suppression de frames
+- Compteur de frames et navigation entre frames avec miniatures
+
+### Add-on
+
+#### Ajouté
+- 🎬 **Animations frame par frame** : Créez des GIFs animés pixel par pixel
+- ➕ Bouton pour ajouter une nouvelle frame
+- 📋 Bouton pour dupliquer la frame courante
+- 🗑️ Bouton pour supprimer une frame
+- ▶️ Prévisualisation d'animation avec canvas 64x64px
+- Réglage du FPS (1-30, recommandé: 8)
+- Liste de miniatures des frames avec navigation cliquable
+- Compteur "Frame X/Y" pour suivre la position
+- API REST complète pour les icônes personnalisées :
+  - `GET /api/icons` - Liste toutes les icônes
+  - `GET /api/icons/{icon_id}` - Récupère une icône
+  - `POST /api/icons/{icon_id}` - Sauvegarde/met à jour
+  - `DELETE /api/icons/{icon_id}` - Supprime
+  - `POST /api/icons/{icon_id}/display` - Affiche sur WLED
+
+#### Modifié
+- Endpoint `/show/mdi` renommé en `/show/icon`
+- Les icônes WI animées sont maintenant lues frame par frame avec le FPS spécifié
+- Modèle `CustomIcon` support `frames` (array) + `fps` en plus de `grid` (legacy)
+- Stockage dans `/data/custom_icons.json` au lieu de localStorage navigateur
+
+#### Amélioré
+- Performance de l'affichage des animations personnalisées
+- Compatibilité ascendante : les anciennes icônes avec `grid` sont toujours supportées
+- Les transformations (rotation, miroirs) s'appliquent à chaque frame des animations
+
 ## [0.3.0] - 2025-11-16
 
 ### Intégration Home Assistant

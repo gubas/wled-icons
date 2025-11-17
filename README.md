@@ -6,6 +6,9 @@ Affichez des icônes **LaMetric animées** sur votre matrice WLED 8x8 directemen
 
 - 🎨 **Icônes LaMetric** : Plus de 1800 icônes 8x8 pixel-art optimisées pour LED
 - 🎬 **GIFs animés** : Support complet des animations LaMetric avec contrôle FPS/boucles
+- ✏️ **Éditeur pixel art** : Créez vos icônes 8x8 personnalisées avec animations frame par frame
+- 🎞️ **Animations personnalisées** : Créez des GIFs animés en dessinant chaque frame
+- 💾 **Stockage persistant** : Bibliothèque d'icônes WI sauvegardées côté serveur
 - 🔄 **Transformations** : Rotation (0/90/180/270°) et miroirs (H/V) pour orientation matrice
 - 🎨 **Recolorisation** : Changement de couleur des icônes monochromes
 - 📤 **Upload personnalisé** : Envoi de vos propres GIFs 8x8
@@ -51,9 +54,21 @@ Dans Home Assistant :
 ### Interface Web (Ingress)
 
 1. Ouvrez l'add-on → **Ouvrir l'interface web**
-2. Entrez l'ID d'une icône LaMetric (ex: `1486` pour serpent animé)
-3. Ajustez orientation, couleur, animation
-4. Cliquez **"Afficher sur WLED"**
+2. **Onglet Icônes LaMetric** :
+   - Entrez l'ID d'une icône LaMetric (ex: `1486` pour serpent animé)
+   - Ajustez orientation, couleur, animation
+   - Cliquez **"Afficher sur WLED"**
+3. **Éditeur Pixel Art** :
+   - Créez vos propres icônes 8x8 avec la palette de couleurs
+   - **Animations frame par frame** :
+     - ➕ Ajouter des frames pour créer une animation
+     - 📋 Dupliquer la frame courante
+     - 🗑️ Supprimer une frame
+     - ▶️ Prévisualiser l'animation
+     - Régler le FPS (1-30, recommandé: 8)
+   - Sauvegardez avec un ID automatique préfixé `WI` (ex: `WI1703123456789123`)
+   - Rechargez et réutilisez vos créations depuis la bibliothèque
+   - Les icônes sont stockées de manière **permanente** dans l'add-on
 
 **Trouver des icônes** : [Galerie LaMetric](https://developer.lametric.com/icons)
 
@@ -62,10 +77,10 @@ Dans Home Assistant :
 L'intégration expose deux services pour vos automatisations :
 
 #### `wled_icons.show_lametric`
-Affiche une icône LaMetric (statique ou animée).
+Affiche une icône LaMetric (statique ou animée) **ou une icône personnalisée WI**.
 
 **Paramètres** :
-- `icon_id` (string, **requis**) : ID LaMetric (ex: `1486`, `2867`)
+- `icon_id` (string, **requis**) : ID LaMetric (ex: `1486`, `2867`) **ou ID WI personnalisé** (ex: `WI1703123456789123`)
 - `host` (string, optionnel) : IP WLED (utilise la config si omis)
 - `color` (string, optionnel) : Couleur hex pour recolorisation (ex: `#FF0000`)
 - `rotate` (int, optionnel) : Rotation 0/90/180/270° (défaut: 0)
@@ -82,6 +97,11 @@ Affiche une icône LaMetric (statique ou animée).
 service: wled_icons.show_lametric
 data:
   icon_id: "2"  # Maison
+
+# Icône personnalisée WI
+service: wled_icons.show_lametric
+data:
+  icon_id: "WI1703123456789123"  # Votre création depuis l'éditeur
 
 # Icône animée avec rotation
 service: wled_icons.show_lametric
@@ -203,8 +223,8 @@ gubas/wled-icons/
 │   ├── Dockerfile                  # Multi-arch build
 │   ├── .dockerignore               # Docker exclusions
 │   ├── app/
-│   │   ├── main.py                 # FastAPI server
-│   │   └── index.html              # Web UI
+│   │   ├── main.py                 # FastAPI server (v0.4.0)
+│   │   └── index.html              # Web UI with pixel art editor
 │   ├── requirements.txt
 │   └── run.sh
 ├── .github/workflows/
@@ -214,6 +234,19 @@ gubas/wled-icons/
 ├── CHANGELOG.md                    # Project changelog
 └── README.md
 ```
+
+### API Endpoints
+
+**Icônes LaMetric/WI** :
+- `POST /show/icon` - Affiche une icône LaMetric ou WI (animée ou statique)
+- `POST /show/gif` - Affiche un GIF 8x8 personnalisé
+
+**Icônes personnalisées (API REST)** :
+- `GET /api/icons` - Liste toutes les icônes WI sauvegardées
+- `GET /api/icons/{icon_id}` - Récupère une icône spécifique
+- `POST /api/icons/{icon_id}` - Sauvegarde ou met à jour une icône
+- `DELETE /api/icons/{icon_id}` - Supprime une icône
+- `POST /api/icons/{icon_id}/display` - Affiche une icône sur WLED avec transformations
 
 ### Test local (Docker)
 ```bash
@@ -288,7 +321,17 @@ docker run --rm -p 8234:8234 wled_icons_test
 **Icône mal orientée** :
 - Utilisez les paramètres `rotate` (0/90/180/270) et `flip_h`/`flip_v`
 - Testez via l'interface web de l'add-on pour trouver la bonne orientation
-- Sauvegardez les valeurs qui fonctionnent (localStorage dans le navigateur)
+- Les paramètres sont appliqués à chaque frame pour les animations
+
+**Icône WI ne s'affiche pas** :
+- Vérifiez que l'ID commence bien par "WI"
+- Consultez `/data/custom_icons.json` dans le container pour voir les icônes sauvegardées
+- Les anciennes icônes avec format `grid` sont automatiquement converties
+
+**Mes icônes ont disparu** :
+- Depuis la v0.4.0, les icônes sont stockées côté serveur dans `/data/custom_icons.json`
+- Si vous aviez des icônes en v0.3.0 (localStorage), elles ne sont pas migrées automatiquement
+- Les icônes sont maintenant backupées avec Home Assistant (pas de perte au vidage cache)
 
 ## 📚 Ressources
 
