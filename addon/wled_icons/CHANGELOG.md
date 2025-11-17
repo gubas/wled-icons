@@ -1,5 +1,12 @@
 # Changelog - WLED Icons Add-on
 
+## [0.5.2] - 2025-11-17
+
+### Amélioré
+- 🔍 **Logs de debug détaillés** : Affichage du type Python et repr() de l'icon_id reçu
+- 🐛 **Test startswith** : Vérification explicite si icon_id.startswith('WI') retourne True/False
+- 🛠️ **Investigation** : Identification du problème de détection des icônes personnalisées vs LaMetric
+
 ## [0.5.1] - 2025-11-17
 
 ### Amélioré

@@ -11,7 +11,7 @@ import cairosvg
 import time
 import json
 
-app = FastAPI(title="WLED Icons Service", version="0.5.1")
+app = FastAPI(title="WLED Icons Service", version="0.5.2")
 
 # Data storage path
 DATA_DIR = Path("/data")
@@ -164,6 +164,8 @@ def show_icon(req: IconRequest):
     """Display LaMetric icon (8x8 JPG) or custom WI icon"""
     
     print(f"[SHOW_ICON] Received request for icon_id: {req.icon_id}")
+    print(f"[SHOW_ICON] icon_id type: {type(req.icon_id)}, repr: {repr(req.icon_id)}")
+    print(f"[SHOW_ICON] Starts with WI? {req.icon_id.startswith('WI')}")
     
     # Check if it's a custom WI icon
     if req.icon_id.startswith("WI"):
