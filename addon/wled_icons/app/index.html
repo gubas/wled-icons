@@ -160,6 +160,13 @@
         <div class='dialog-overlay' id='dialogOverlay' onclick='closeSaveDialog()'></div>
         <div class='save-dialog' id='saveDialog'>
             <h3 style='margin-top: 0'>💾 Sauvegarder la création</h3>
+            
+            <label>ID généré</label>
+            <div style='display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem'>
+                <input type='text' id='generatedIconId' readonly style='flex: 1; background: var(--bg-secondary); cursor: pointer' onclick='copyIconIdFromDialog()' title='Cliquer pour copier'/>
+                <button type='button' onclick='copyIconIdFromDialog()' class='btn-secondary' title='Copier l\'ID'>📋</button>
+            </div>
+            
             <label>Nom de l'icône (optionnel)</label>
             <input type='text' id='iconName' placeholder='Mon icône' style='width: 100%; margin-bottom: 1rem'/>
             <div style='display: flex; gap: 0.5rem; justify-content: flex-end'>
@@ -766,7 +773,12 @@
             }
         }
         
-        function showSaveDialog() {
+        function openSaveDialog() {
+            // Generate and display the ID that will be used
+            const iconId = generateIconId();
+            document.getElementById('generatedIconId').value = iconId;
+            document.getElementById('generatedIconId').dataset.iconId = iconId;
+            
             document.getElementById('dialogOverlay').classList.add('show');
             document.getElementById('saveDialog').classList.add('show');
             document.getElementById('iconName').value = '';
@@ -778,9 +790,19 @@
             document.getElementById('saveDialog').classList.remove('show');
         }
         
+        function copyIconIdFromDialog() {
+            const iconId = document.getElementById('generatedIconId').value;
+            navigator.clipboard.writeText(iconId).then(() => {
+                showMsg(`✅ ID copié : ${iconId}`);
+            }).catch(() => {
+                showMsg(`📋 ID : ${iconId}`);
+            });
+        }
+        
         async function saveIconToLibrary() {
             const name = document.getElementById('iconName').value.trim() || 'Sans nom';
-            const iconId = generateIconId();
+            // Use the ID that was generated when opening the dialog
+            const iconId = document.getElementById('generatedIconId').dataset.iconId;
             
             // Save current frame before saving
             frames[currentFrameIndex] = JSON.parse(JSON.stringify(pixelGrid));
