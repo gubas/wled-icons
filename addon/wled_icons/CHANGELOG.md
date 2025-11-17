@@ -1,5 +1,20 @@
 # Changelog - WLED Icons Add-on
 
+## [0.4.2] - 2025-11-17
+
+### Amélioré
+- 📐 **Mise en page responsive en grille CSS** : 1 colonne (mobile) → 2 colonnes (1024px+) → 3 colonnes (1440px+)
+- 🎨 **Éditeur optimisé** : Grille de dessin 8x8 positionnée à côté de la palette de couleurs sur desktop
+- 📑 **Onglets éditeur** : Séparation claire entre "✏️ Dessin" et "🎬 Animation"
+- ⚙️ **Options d'orientation** : Masquées par défaut, affichables via bouton "⚙️ Options d'orientation"
+- 📚 **Bibliothèque dédiée** : "Mes Créations Sauvegardées" dans une carte pleine largeur
+- ✨ Les cartes se réorganisent automatiquement selon l'espace disponible (pas de largeur max fixe)
+- 🖥️ Meilleure utilisation de l'espace sur grand écran
+
+### Corrigé
+- 🐛 La boîte de dialogue de sauvegarde se ferme maintenant toujours (même en cas d'erreur serveur)
+- 🐛 Suppression de la duplication de la bibliothèque dans les onglets
+
 ## [0.4.1] - 2025-11-17
 
 ### Amélioré

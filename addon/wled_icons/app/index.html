@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class='container'>
-        <div class='card'>
+        <div class='card card-header'>
             <h1>
                 <svg viewBox='0 0 24 24'>
                     <path d='M12,2L2,7V11C2,16.5 6,21.8 12,23C18,21.8 22,16.5 22,11V7L12,2M12,4.2L20,8.3V11C20,15.5 16.8,19.9 12,21C7.2,19.9 4,15.5 4,11V8.3L12,4.2M11,7V13H13V7H11M11,15V17H13V15H11Z'/>
@@ -33,19 +33,23 @@
                 <label>Couleur personnalisée (optionnel)</label>
                 <input name='color' type='text' placeholder='#18BCF2' autocomplete='off'/>
                 
-                <div class='section-title'>Orientation</div>
-                <div class='checkbox-group'>
-                    <label class='checkbox-label'><input type='checkbox' name='flip_h'/>Miroir horizontal</label>
-                    <label class='checkbox-label'><input type='checkbox' name='flip_v'/>Miroir vertical</label>
-                </div>
+                <button type='button' onclick='toggleOrientation()' class='btn-secondary' style='margin-top: 1rem'>⚙️ Options d'orientation</button>
                 
-                <label>Rotation</label>
-                <select name='rotate'>
-                    <option value='0'>0°</option>
-                    <option value='90'>90°</option>
-                    <option value='180'>180°</option>
-                    <option value='270'>270°</option>
-                </select>
+                <div id='orientationSection' style='display: none'>
+                    <div class='section-title'>Orientation</div>
+                    <div class='checkbox-group'>
+                        <label class='checkbox-label'><input type='checkbox' name='flip_h'/>Miroir horizontal</label>
+                        <label class='checkbox-label'><input type='checkbox' name='flip_v'/>Miroir vertical</label>
+                    </div>
+                    
+                    <label>Rotation</label>
+                    <select name='rotate'>
+                        <option value='0'>0°</option>
+                        <option value='90'>90°</option>
+                        <option value='180'>180°</option>
+                        <option value='270'>270°</option>
+                    </select>
+                </div>
                 
                 <div class='section-title'>Animation (GIF uniquement)</div>
                 <label class='checkbox-label'>
@@ -68,9 +72,15 @@
         
         <div class='card'>
             <div class='section-title'>🎨 Créer une Icône Personnalisée</div>
-            <div id='pixelEditor'>
-                <div class='editor-controls'>
-                    <div class='color-palette'>
+            <div class='editor-tabs'>
+                <button class='tab-btn active' onclick='switchTab("draw")' id='tabDraw'>✏️ Dessin</button>
+                <button class='tab-btn' onclick='switchTab("animation")' id='tabAnimation'>🎬 Animation</button>
+            </div>
+            
+            <div id='pixelEditor' class='tab-content active'>
+                <div class='editor-layout'>
+                    <div class='editor-controls'>
+                        <div class='color-palette'>
                         <div class='palette-section'>
                             <div class='color-swatch' style='background: #FFFFFF' data-color='#FFFFFF' title='Blanc'></div>
                             <div class='color-swatch' style='background: #FF0000' data-color='#FF0000' title='Rouge'></div>
@@ -102,21 +112,25 @@
                             <div class='color-swatch selected' style='background: #000000' data-color='#000000' title='Noir'></div>
                         </div>
                     </div>
-                    <div class='current-color-display'>
-                        <label>Couleur actuelle</label>
-                        <div class='current-color' style='background: #000000'></div>
-                        <input type='color' id='customColor' value='#000000' title='Sélecteur de couleur'/>
+                        <div class='current-color-display'>
+                            <label>Couleur actuelle</label>
+                            <div class='current-color' style='background: #000000'></div>
+                            <input type='color' id='customColor' value='#000000' title='Sélecteur de couleur'/>
+                        </div>
                     </div>
-                    <div class='editor-actions'>
-                        <button type='button' onclick='clearCanvas()' class='btn-secondary'>🗑️ Effacer</button>
-                        <button type='button' onclick='fillCanvas()' class='btn-secondary'>🎨 Remplir</button>
-                        <button type='button' onclick='showSaveDialog()' class='btn-primary'>💾 Sauvegarder</button>
-                        <button type='button' onclick='sendPixelArt()'>📤 Envoyer WLED</button>
-                        <button type='button' onclick='exportPixelArt()' class='btn-secondary' style='grid-column: span 2'>⬇️ Télécharger PNG</button>
-                    </div>
+                    <canvas id='pixelCanvas' width='320' height='320'></canvas>
                 </div>
-                <canvas id='pixelCanvas' width='320' height='320'></canvas>
                 
+                <div class='editor-actions'>
+                    <button type='button' onclick='clearCanvas()' class='btn-secondary'>🗑️ Effacer</button>
+                    <button type='button' onclick='fillCanvas()' class='btn-secondary'>🎨 Remplir</button>
+                    <button type='button' onclick='showSaveDialog()' class='btn-primary'>💾 Sauvegarder</button>
+                    <button type='button' onclick='sendPixelArt()'>📤 Envoyer WLED</button>
+                    <button type='button' onclick='exportPixelArt()' class='btn-secondary' style='grid-column: span 2'>⬇️ Télécharger PNG</button>
+                </div>
+            </div>
+            
+            <div id='animationEditor' class='tab-content'>
                 <div class='animation-controls'>
                     <div class='section-title' style='margin: 0'>🎬 Animation Frame par Frame</div>
                     <div class='frame-controls'>
@@ -135,10 +149,12 @@
                     </div>
                     <div class='frame-list' id='frameList'></div>
                 </div>
-                
-                <div class='section-title' style='margin-top: 2rem'>📚 Mes Créations Sauvegardées</div>
-                <div class='saved-icons' id='savedIconsList'></div>
             </div>
+        </div>
+        
+        <div class='card card-library'>
+            <div class='section-title'>📚 Mes Créations Sauvegardées</div>
+            <div class='saved-icons' id='savedIconsList'></div>
         </div>
         
         <div class='dialog-overlay' id='dialogOverlay' onclick='closeSaveDialog()'></div>
@@ -229,6 +245,27 @@
             const iconId = localStorage.getItem(STORAGE_KEYS.icon_id);
             if (iconId) previewIcon();
         });
+
+        // UI Toggle Functions
+        function toggleOrientation() {
+            const section = document.getElementById('orientationSection');
+            const isHidden = section.style.display === 'none';
+            section.style.display = isHidden ? 'block' : 'none';
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            if (tabName === 'draw') {
+                document.getElementById('pixelEditor').classList.add('active');
+            } else if (tabName === 'animation') {
+                document.getElementById('animationEditor').classList.add('active');
+            }
+        }
 
         // Save values to localStorage
         function saveFormValues(formId) {
@@ -750,10 +787,12 @@
             try {
                 await saveIconToServer(iconId, iconData);
                 await loadSavedIcons();
-                closeSaveDialog();
                 showMsg(`✅ Icône sauvegardée : ${iconId} (${frames.length} frame${frames.length > 1 ? 's' : ''})`);
             } catch (error) {
                 // Error already shown in saveIconToServer
+            } finally {
+                // Always close the dialog, even if there's an error
+                closeSaveDialog();
             }
         }
         
