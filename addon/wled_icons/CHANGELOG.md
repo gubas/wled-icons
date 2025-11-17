@@ -1,5 +1,15 @@
 # Changelog - WLED Icons Add-on
 
+## [0.4.1] - 2025-11-17
+
+### Amélioré
+- 📁 Extraction du CSS dans un fichier séparé (`styles.css`)
+- 🎯 Amélioration de la maintenabilité du code
+- 📉 Réduction de la taille de `index.html` (1436 → 861 lignes, -40%)
+- ⚡ Meilleure performance de cache navigateur
+- 🔧 Séparation des préoccupations (HTML structure / CSS présentation)
+- Ajout de l'endpoint `/styles.css` pour servir la feuille de style
+
 ## [0.4.0] - 2025-11-17
 
 ### Ajouté

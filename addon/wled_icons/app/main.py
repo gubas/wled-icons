@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
 from pathlib import Path
@@ -10,7 +11,7 @@ import cairosvg
 import time
 import json
 
-app = FastAPI(title="WLED Icons Service", version="0.4.0")
+app = FastAPI(title="WLED Icons Service", version="0.4.1")
 
 # Data storage path
 DATA_DIR = Path("/data")
@@ -18,6 +19,7 @@ ICONS_FILE = DATA_DIR / "custom_icons.json"
 
 # HTML file path
 HTML_FILE = Path(__file__).parent / "index.html"
+CSS_FILE = Path(__file__).parent / "styles.css"
 
 # --- Icon Storage Helpers ---
 
@@ -354,6 +356,12 @@ def show_gif(req: GifRequest):
 def root():
     """Serve the HTML UI"""
     return FileResponse(HTML_FILE, media_type="text/html")
+
+
+@app.get("/styles.css")
+def styles():
+    """Serve the CSS file"""
+    return FileResponse(CSS_FILE, media_type="text/css")
 
 
 # --- Custom Icons API ---

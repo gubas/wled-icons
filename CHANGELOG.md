@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2025-11-17
+
+### Add-on
+
+#### Amélioré
+- Extraction du CSS dans un fichier séparé (`styles.css`) pour améliorer la maintenabilité
+- Réduction de la taille du fichier `index.html` de 1436 à 861 lignes
+- Meilleure organisation du code (séparation HTML/CSS)
+- Amélioration du cache navigateur (le CSS peut être mis en cache indépendamment)
+
 ## [0.4.0] - 2025-11-17
 
 ### Intégration Home Assistant
