@@ -1,5 +1,12 @@
 # Changelog - WLED Icons Add-on
 
+## [0.4.3] - 2025-11-17
+
+### Corrigé
+- 🐛 **Messages d'erreur améliorés** : Les erreurs de sauvegarde/suppression s'affichent dans des popups alert() au lieu de messages discrets
+- 📊 Affichage du code HTTP et du message d'erreur complet pour faciliter le diagnostic
+- ✅ L'utilisateur est maintenant toujours informé visuellement en cas d'échec
+
 ## [0.4.2] - 2025-11-17
 
 ### Amélioré

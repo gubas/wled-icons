@@ -734,11 +734,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(iconData)
                 });
-                if (!response.ok) throw new Error('Failed to save icon');
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
                 return await response.json();
             } catch (error) {
                 console.error('Error saving icon:', error);
-                showMsg('❌ Erreur de sauvegarde');
+                alert(`❌ Erreur de sauvegarde\n\n${error.message}\n\nVérifiez que le serveur est accessible.`);
                 throw error;
             }
         }
@@ -748,11 +751,14 @@
                 const response = await fetch(`/api/icons/${iconId}`, {
                     method: 'DELETE'
                 });
-                if (!response.ok) throw new Error('Failed to delete icon');
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
                 return await response.json();
             } catch (error) {
                 console.error('Error deleting icon:', error);
-                showMsg('❌ Erreur de suppression');
+                alert(`❌ Erreur de suppression\n\n${error.message}`);
                 throw error;
             }
         }
