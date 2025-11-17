@@ -1,5 +1,14 @@
 # Changelog - WLED Icons Add-on
 
+## [0.5.3] - 2025-11-17
+
+### Amélioré
+- 🔍 **Logs send_frame détaillés** : Suivi complet de l'envoi vers WLED (host, dimensions array, payload JSON)
+- 📊 **Diagnostic pixels** : Affichage d'un échantillon de la première ligne de couleurs
+- ⚠️ **Erreurs réseau** : Capture des exceptions requests avec messages explicites
+- 🎯 **Identification source** : Réponse `{"ok": true, "source": "custom"}` pour les icônes WI
+- 🐛 **Debug WLED** : Logs du code de réponse et du texte d'erreur WLED si applicable
+
 ## [0.5.2] - 2025-11-17
 
 ### Amélioré

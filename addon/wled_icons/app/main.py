@@ -11,7 +11,7 @@ import cairosvg
 import time
 import json
 
-app = FastAPI(title="WLED Icons Service", version="0.5.2")
+app = FastAPI(title="WLED Icons Service", version="0.5.3")
 
 # Data storage path
 DATA_DIR = Path("/data")
@@ -96,11 +96,25 @@ def frame_to_colors(frame: Image.Image, rotate: int = 0, flip_h: bool = False, f
 
 
 def send_frame(host: str, colors: List[List[int]]):
+    print(f"[SEND_FRAME] Sending to {host}")
+    print(f"[SEND_FRAME] Colors array dimensions: {len(colors)}x{len(colors[0]) if colors else 0}")
+    
     url = f"http://{host}/json/state"
     payload = {"seg": [{"id": 0, "i": colors}]}
-    r = requests.post(url, json=payload, timeout=5)
-    if not r.ok:
-        raise HTTPException(status_code=502, detail=f"WLED error: {r.status_code} {r.text}")
+    
+    print(f"[SEND_FRAME] Payload: {payload}")
+    
+    try:
+        r = requests.post(url, json=payload, timeout=5)
+        print(f"[SEND_FRAME] WLED response: {r.status_code}")
+        if not r.ok:
+            print(f"[SEND_FRAME] WLED error: {r.text}")
+            raise HTTPException(status_code=502, detail=f"WLED error: {r.status_code} {r.text}")
+        else:
+            print(f"[SEND_FRAME] Success!")
+    except requests.exceptions.RequestException as e:
+        print(f"[SEND_FRAME] Request exception: {e}")
+        raise HTTPException(status_code=502, detail=f"Connection error: {str(e)}")
 
 
 def rasterize_svg(svg_bytes: bytes, color: Optional[str]) -> Image.Image:
@@ -244,8 +258,11 @@ def show_icon(req: IconRequest):
                 
                 colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
             
+            print(f"[SHOW_ICON] About to send frame to {req.host}")
+            print(f"[SHOW_ICON] Colors sample (first row): {colors[0] if colors else 'empty'}")
             send_frame(req.host, colors)
-            return {"ok": True}
+            print(f"[SHOW_ICON] Frame sent successfully")
+            return {"ok": True, "source": "custom"}
     
     # LaMetric icon handling (original code)
     # Download 8x8 image from LaMetric (can be JPG or GIF)
