@@ -1,5 +1,15 @@
 # Changelog - WLED Icons Add-on
 
+## [0.4.5] - 2025-11-17
+
+### Corrigé
+- 🐛 **Correction critique du bug de sauvegarde** : Tous les appels API utilisent maintenant `basePath`
+- 🔗 Les URLs `/api/icons`, `/api/icons/{icon_id}` sont maintenant correctement préfixées
+- ✅ Résolution du problème HTTP 404 sur les endpoints API avec l'ingress Home Assistant
+- 💾 La sauvegarde d'icônes personnalisées fonctionne maintenant correctement
+- 🗑️ La suppression d'icônes fonctionne également
+- 📚 Le chargement de la bibliothèque d'icônes est opérationnel
+
 ## [0.4.4] - 2025-11-17
 
 ### Amélioré

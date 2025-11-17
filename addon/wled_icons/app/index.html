@@ -717,7 +717,7 @@
         
         async function getSavedIcons() {
             try {
-                const response = await fetch('/api/icons');
+                const response = await fetch(basePath + '/api/icons');
                 if (!response.ok) throw new Error('Failed to load icons');
                 return await response.json();
             } catch (error) {
@@ -730,7 +730,7 @@
         async function saveIconToServer(iconId, iconData) {
             try {
                 console.log('Saving icon:', iconId, iconData);
-                const response = await fetch(`/api/icons/${iconId}`, {
+                const response = await fetch(basePath + `/api/icons/${iconId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(iconData)
@@ -751,7 +751,7 @@
         
         async function deleteIconFromServer(iconId) {
             try {
-                const response = await fetch(`/api/icons/${iconId}`, {
+                const response = await fetch(basePath + `/api/icons/${iconId}`, {
                     method: 'DELETE'
                 });
                 if (!response.ok) {
