@@ -1,5 +1,14 @@
 # Changelog - WLED Icons Add-on
 
+## [0.5.7] - 2025-11-18
+
+### Corrigé
+- 🐛 **Champ ID visible** : Correction définitive de l'affichage de l'ID généré dans le dialogue de sauvegarde
+- 💅 **Styles inline** : Application directe des styles dans le HTML pour éviter les conflits CSS
+- ❌ **Bouton 📋 retiré** : Suppression du bouton de copie redondant à côté du champ
+- 🖱️ **Clic direct** : Copie de l'ID en cliquant directement sur le champ (plus simple)
+- 🔍 **Debug amélioré** : Logs console pour vérifier la génération et l'assignation de l'ID
+
 ## [0.5.6] - 2025-11-18
 
 ### Amélioré

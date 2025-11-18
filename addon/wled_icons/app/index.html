@@ -162,10 +162,7 @@
             <h3 style='margin-top: 0'>💾 Sauvegarder la création</h3>
             
             <label>ID généré</label>
-            <div style='display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem'>
-                <input type='text' id='generatedIconId' readonly class='generated-id-input' onclick='copyIconIdFromDialog()' title='Cliquer pour copier'/>
-                <button type='button' onclick='copyIconIdFromDialog()' class='btn-secondary' title='Copier l\'ID'>📋</button>
-            </div>
+            <input type='text' id='generatedIconId' readonly onclick='copyIconIdFromDialog()' title='Cliquer pour copier' style='width: 100%; margin-bottom: 1rem; background: var(--input-bg); color: var(--primary); font-family: "Courier New", monospace; font-weight: 600; text-align: center; padding: 0.75rem; font-size: 0.9rem; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;'/>
             
             <label>Nom de l'icône (optionnel)</label>
             <input type='text' id='iconName' placeholder='Mon icône' style='width: 100%; margin-bottom: 1rem'/>
@@ -805,8 +802,14 @@
         function openSaveDialog() {
             // Generate and display the ID that will be used
             const iconId = generateIconId();
-            document.getElementById('generatedIconId').value = iconId;
-            document.getElementById('generatedIconId').dataset.iconId = iconId;
+            console.log('[SAVE_DIALOG] Generated ID:', iconId);
+            
+            const inputField = document.getElementById('generatedIconId');
+            inputField.value = iconId;
+            inputField.dataset.iconId = iconId;
+            
+            console.log('[SAVE_DIALOG] Input field value:', inputField.value);
+            console.log('[SAVE_DIALOG] Input field dataset:', inputField.dataset.iconId);
             
             document.getElementById('dialogOverlay').classList.add('show');
             document.getElementById('saveDialog').classList.add('show');
