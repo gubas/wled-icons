@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.6] - 2025-11-18
+
+### Add-on
+
+#### Amélioré
+- 🎨 **Interface épurée** : Suppression de l'icône 📋 devant l'ID (6 chiffres uniquement)
+- 🚫 **Masquage intelligent** : La ligne de nom disparaît si l'icône n'a pas de nom personnalisé
+- 📏 **Boutons compacts** : Réduction de la taille des boutons d'action (📤 📋 🗑️)
+- 💬 **Micro popup** : Messages flottants en haut à droite avec animation douce
+- ✨ **Animation moderne** : Apparition en fondu avec translateY pour les notifications
+- 🎯 **Badge animation** : Affichage sur la date si pas de nom personnalisé
+
 ## [0.5.5] - 2025-11-17
 
 ### Add-on

@@ -234,13 +234,29 @@ button:active {
 }
 
 #msg {
-    margin-top: 1rem;
-    padding: 0.75rem;
-    border-radius: 6px;
-    background: var(--input-bg);
-    color: var(--text-secondary);
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--text);
     font-size: 0.9rem;
+    font-weight: 500;
     text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    border: 2px solid var(--primary);
+    z-index: 9999;
+    max-width: 300px;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+#msg:not(:empty) {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 #msg:empty {
@@ -549,22 +565,23 @@ button:active {
 
 .icon-actions {
     display: flex;
-    gap: 0.25rem;
+    gap: 0.2rem;
     margin-top: 0.25rem;
 }
 
 .icon-action-btn {
     background: var(--input-bg);
     border: 1px solid var(--border);
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.35rem;
     border-radius: 4px;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .icon-action-btn:hover {
     background: var(--border);
+    transform: scale(1.15);
 }
 
 .icon-action-btn.delete {

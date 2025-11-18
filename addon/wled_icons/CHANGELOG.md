@@ -1,5 +1,16 @@
 # Changelog - WLED Icons Add-on
 
+## [0.5.6] - 2025-11-18
+
+### Amélioré
+- 🎨 **ID ultra-épuré** : Suppression de l'icône 📋, affichage des 6 chiffres seulement
+- 🚫 **Ligne de nom conditionnelle** : Masquage automatique si aucun nom personnalisé ("Sans nom")
+- 📏 **Boutons miniaturisés** : Taille réduite de 30% pour les actions (📤 Utiliser, 📋 Copier, 🗑️ Supprimer)
+- 💬 **Notifications modernes** : Micro popup flottant en haut à droite (au lieu du gros bloc en bas)
+- ✨ **Animation fluide** : Transition opacity + translateY(-20px → 0) sur 0.3s
+- 🎯 **Badge intelligent** : Affichage du badge 🎬 sur la date si pas de nom, sinon sur le nom
+- 📐 **Espace optimisé** : Interface plus compacte et lisible avec moins d'éléments visuels
+
 ## [0.5.5] - 2025-11-17
 
 ### Amélioré
