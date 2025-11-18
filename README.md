@@ -24,6 +24,7 @@ Affichez des icônes **LaMetric animées** sur votre matrice WLED 8x8 directemen
 
 ## 📦 Architecture
 
+- **Frontend** : Architecture modulaire (HTML + CSS + JS séparés) avec constantes configurables
 - **Add-on Home Assistant** : FastAPI server avec Ingress UI (port 8234)
 - **Intégration custom** : Services HA + config flow
 - **API LaMetric** : Téléchargement direct des icônes depuis `developer.lametric.com`

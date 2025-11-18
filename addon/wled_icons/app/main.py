@@ -20,11 +20,13 @@ ICONS_FILE = DATA_DIR / "custom_icons.json"
 # HTML file path
 HTML_FILE = Path(__file__).parent / "index.html"
 CSS_FILE = Path(__file__).parent / "styles.css"
+JS_FILE = Path(__file__).parent / "app.js"
 
 print(f"[STARTUP] Data directory: {DATA_DIR}")
 print(f"[STARTUP] Icons file: {ICONS_FILE}")
 print(f"[STARTUP] HTML file: {HTML_FILE}")
 print(f"[STARTUP] CSS file: {CSS_FILE}")
+print(f"[STARTUP] JS file: {JS_FILE}")
 
 # --- Icon Storage Helpers ---
 
@@ -397,6 +399,12 @@ def root():
 def styles():
     """Serve the CSS file"""
     return FileResponse(CSS_FILE, media_type="text/css")
+
+
+@app.get("/app.js")
+def scripts():
+    """Serve the JS file"""
+    return FileResponse(JS_FILE, media_type="application/javascript")
 
 
 # --- Custom Icons API ---

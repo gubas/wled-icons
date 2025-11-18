@@ -1,5 +1,14 @@
 # Changelog - WLED Icons Add-on
 
+## [0.6.0] - 2025-11-18
+
+### Refactoring
+- 🏗️ **Architecture Frontend** : Séparation complète du code (HTML structurel, JS logique, CSS style)
+- 🧹 **Nettoyage** : Extraction de ~940 lignes de JavaScript de `index.html` vers `app.js`
+- 🔢 **Constantes** : Remplacement des "nombres magiques" (8, 64, 320) par des constantes globales (`GRID_SIZE`, `PREVIEW_SIZE`, `EDITOR_SIZE`)
+- 🚀 **Performance** : Chargement optimisé des ressources et meilleure maintenabilité du code
+- 🔧 **Backend** : Mise à jour de `main.py` pour servir les fichiers statiques JS séparés
+
 ## [0.5.8] - 2025-11-18
 
 ### Ajouté
