@@ -1,5 +1,29 @@
 # Changelog - WLED Icons Add-on
 
+## [0.5.8] - 2025-11-18
+
+### Ajouté
+- 💡 **Contrôle luminosité** : Slider 1-255 avant envoi WLED pour ajuster l'intensité lumineuse
+- ✏️ **Outil pipette** : Copier la couleur d'un pixel en cliquant dessus (bouton 🎨)
+- 🪠 **Symétrie H/V** : Dessiner en miroir horizontal/vertical avec boutons ↔️ et ↕️
+- ⏮️ **Undo/Redo** : Historique de 50 états avec boutons et raccourcis Ctrl+Z / Ctrl+Y
+- 🔌 **API REST étendue** : 7 nouveaux endpoints pour automatisation :
+  - `POST /api/wled/brightness` : Régler la luminosité WLED (0-255)
+  - `POST /api/wled/state` : Récupérer l'état actuel du WLED
+  - `POST /api/wled/on` : Allumer le WLED
+  - `POST /api/wled/off` : Éteindre le WLED
+  - `POST /api/icons/bulk-display` : Afficher plusieurs icônes séquentiellement
+  - `GET /api/icons/search?q=...` : Rechercher des icônes par nom ou ID
+  - Paramètre `brightness` ajouté à tous les endpoints d'envoi
+
+### Amélioré
+- 🎨 **Système d'outils** : Bascule entre dessin et pipette (curseur change automatiquement)
+- ⌨️ **Raccourcis clavier** : Ctrl+Z annuler, Ctrl+Y / Ctrl+Shift+Z refaire
+- 💾 **Historique intelligent** : Sauvegarde automatique avant chaque dessin, buffer circulaire de 50
+- 🔹 **Boutons actifs** : Style visuel pour l'outil sélectionné (fond bleu)
+- 📈 **Application luminosité** : Calcul RGB précis avec arrondi (r * bri / 255)
+- 📝 **Messages détaillés** : Affichage de la luminosité utilisée dans le message de confirmation
+
 ## [0.5.7] - 2025-11-18
 
 ### Corrigé

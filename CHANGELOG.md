@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.8] - 2025-11-18
+
+### Add-on
+
+#### Ajouté
+- 💡 **Contrôle luminosité** : Slider 1-255 pour régler l'intensité avant envoi WLED
+- ✏️ **Outil pipette** : Copier les couleurs en cliquant sur un pixel (🎨)
+- 🪠 **Symétrie automatique** : Miroir horizontal/vertical en temps réel (↔️ ↕️)
+- ⏮️⏭️ **Undo/Redo** : Historique de 50 états + raccourcis Ctrl+Z / Ctrl+Y
+- 🔌 **API REST étendue** : 7 nouveaux endpoints pour automatisation :
+  - Contrôle luminosité WLED
+  - Récupération d'état WLED
+  - On/Off WLED
+  - Affichage séquentiel d'icônes (slideshow)
+  - Recherche d'icônes par nom/ID
+
+#### Amélioré
+- 🎨 **Système d'outils** : Basculer entre dessin/pipette (curseur adapté)
+- ⌨️ **Raccourcis clavier** : Support Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z
+- 🔹 **Feedback visuel** : Style actif sur l'outil sélectionné
+- 💾 **Historique intelligent** : Sauvegarde avant chaque action, buffer circulaire
+- 📈 **Précision luminosité** : Application correcte sur RGB avec arrondi
+
 ## [0.5.7] - 2025-11-18
 
 ### Add-on

@@ -477,6 +477,12 @@ button:active {
     transform: translateY(-1px);
 }
 
+.btn-secondary.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
 .btn-primary {
     background: var(--primary);
     color: white;

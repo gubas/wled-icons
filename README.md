@@ -13,9 +13,14 @@ Affichez des icônes **LaMetric animées** sur votre matrice WLED 8x8 directemen
 - 💾 **Stockage persistant** : Bibliothèque d'icônes WI sauvegardées côté serveur
 - 🔄 **Transformations** : Rotation (0/90/180/270°) et miroirs (H/V) pour orientation matrice
 - 🎨 **Recolorisation** : Changement de couleur des icônes monochromes
+- 💡 **Contrôle luminosité** : Slider 1-255 pour ajuster l'intensité avant envoi WLED
+- 🎨 **Outil pipette** : Copier la couleur d'un pixel en cliquant dessus
+- 🪞 **Symétrie H/V** : Dessiner en miroir horizontal/vertical automatiquement
+- ⏮️⏭️ **Undo/Redo** : Historique de 50 états avec raccourcis Ctrl+Z / Ctrl+Y
 - 📤 **Upload personnalisé** : Envoi de vos propres GIFs 8x8
 - 🌓 **Interface moderne** : UI responsive avec support dark mode
 - 🏠 **Intégration HA** : Services Home Assistant pour automatisations
+- 🔌 **API REST étendue** : 7 endpoints pour automatisation avancée (voir [API.md](./API.md))
 
 ## 📦 Architecture
 

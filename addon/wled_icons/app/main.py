@@ -11,7 +11,7 @@ import cairosvg
 import time
 import json
 
-app = FastAPI(title="WLED Icons Service", version="0.5.7")
+app = FastAPI(title="WLED Icons Service", version="0.5.8")
 
 # Data storage path
 DATA_DIR = Path("/data")
@@ -95,12 +95,12 @@ def frame_to_colors(frame: Image.Image, rotate: int = 0, flip_h: bool = False, f
     return pixels
 
 
-def send_frame(host: str, colors: List[List[int]]):
-    print(f"[SEND_FRAME] Sending to {host}")
+def send_frame(host: str, colors: List[List[int]], brightness: int = 255):
+    print(f"[SEND_FRAME] Sending to {host} with brightness {brightness}")
     print(f"[SEND_FRAME] Colors array dimensions: {len(colors)}x{len(colors[0]) if colors else 0}")
     
     url = f"http://{host}/json/state"
-    payload = {"seg": [{"id": 0, "i": colors}]}
+    payload = {"seg": [{"id": 0, "i": colors, "bri": brightness}]}
     
     print(f"[SEND_FRAME] Payload: {payload}")
     
@@ -481,3 +481,140 @@ def display_custom_icon(icon_id: str, host: str, rotate: int = 0, flip_h: bool =
     
     send_frame(host, colors)
     return {"ok": True}
+
+
+# --- Extended API for Automation ---
+
+class BrightnessRequest(BaseModel):
+    host: str
+    brightness: int = Field(..., ge=0, le=255, description="Brightness value 0-255")
+
+class WLEDStateRequest(BaseModel):
+    host: str
+
+class BulkDisplayRequest(BaseModel):
+    icons: List[str] = Field(..., description="List of icon IDs to display sequentially")
+    host: str
+    duration: float = Field(2.0, ge=0.1, description="Duration per icon in seconds")
+    brightness: int = Field(255, ge=0, le=255)
+    rotate: int = Field(0, ge=0, le=270)
+    flip_h: bool = False
+    flip_v: bool = False
+
+
+@app.post("/api/wled/brightness")
+def set_wled_brightness(req: BrightnessRequest):
+    """Set WLED brightness without changing content"""
+    url = f"http://{req.host}/json/state"
+    payload = {"bri": req.brightness}
+    
+    try:
+        r = requests.post(url, json=payload, timeout=5)
+        if not r.ok:
+            raise HTTPException(status_code=502, detail=f"WLED error: {r.status_code}")
+        return {"ok": True, "brightness": req.brightness}
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"Connection error: {str(e)}")
+
+
+@app.post("/api/wled/state")
+def get_wled_state(req: WLEDStateRequest):
+    """Get current WLED state"""
+    url = f"http://{req.host}/json/state"
+    
+    try:
+        r = requests.get(url, timeout=5)
+        if not r.ok:
+            raise HTTPException(status_code=502, detail=f"WLED error: {r.status_code}")
+        return r.json()
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"Connection error: {str(e)}")
+
+
+@app.post("/api/wled/off")
+def turn_wled_off(req: WLEDStateRequest):
+    """Turn WLED off"""
+    url = f"http://{req.host}/json/state"
+    payload = {"on": False}
+    
+    try:
+        r = requests.post(url, json=payload, timeout=5)
+        if not r.ok:
+            raise HTTPException(status_code=502, detail=f"WLED error: {r.status_code}")
+        return {"ok": True}
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"Connection error: {str(e)}")
+
+
+@app.post("/api/wled/on")
+def turn_wled_on(req: WLEDStateRequest):
+    """Turn WLED on"""
+    url = f"http://{req.host}/json/state"
+    payload = {"on": True}
+    
+    try:
+        r = requests.post(url, json=payload, timeout=5)
+        if not r.ok:
+            raise HTTPException(status_code=502, detail=f"WLED error: {r.status_code}")
+        return {"ok": True}
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"Connection error: {str(e)}")
+
+
+@app.post("/api/icons/bulk-display")
+def bulk_display_icons(req: BulkDisplayRequest):
+    """Display multiple icons sequentially"""
+    icons_db = load_custom_icons()
+    displayed = []
+    
+    for icon_id in req.icons:
+        if icon_id not in icons_db:
+            print(f"[BULK] Icon {icon_id} not found, skipping")
+            continue
+        
+        icon_data = icons_db[icon_id]
+        grid = icon_data["grid"]
+        
+        # Build image for transformations
+        img = Image.new("RGB", (8, 8))
+        pixels = img.load()
+        for y in range(8):
+            for x in range(8):
+                rgb = hex_to_rgb(grid[y][x])
+                pixels[x, y] = rgb
+        
+        colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
+        
+        # Apply brightness
+        if req.brightness < 255:
+            colors = [[int(c * req.brightness / 255) for c in pixel] for pixel in colors]
+        
+        send_frame(req.host, colors, req.brightness)
+        displayed.append(icon_id)
+        
+        if len(displayed) < len(req.icons):  # Don't sleep after last icon
+            time.sleep(req.duration)
+    
+    return {"ok": True, "displayed": displayed, "count": len(displayed)}
+
+
+@app.get("/api/icons/search")
+def search_icons(q: str = "", limit: int = 20):
+    """Search icons by name or ID"""
+    icons = load_custom_icons()
+    results = []
+    
+    q_lower = q.lower()
+    for icon_id, icon_data in icons.items():
+        name = icon_data.get("name", "").lower()
+        if q_lower in icon_id.lower() or q_lower in name:
+            results.append({
+                "id": icon_id,
+                "name": icon_data.get("name", ""),
+                "grid": icon_data.get("grid", [])
+            })
+            if len(results) >= limit:
+                break
+    
+    return {"icons": results, "count": len(results)}
+
