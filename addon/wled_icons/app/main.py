@@ -10,8 +10,14 @@ from PIL import Image, ImageSequence, ImageDraw, ImageFilter
 import cairosvg
 import time
 import json
+import threading
 
-app = FastAPI(title="WLED Icons Service", version="0.6.1")
+app = FastAPI(title="WLED Icons Service", version="0.6.2")
+
+# Global animation control
+animation_lock = threading.Lock()
+stop_animation_event = threading.Event()
+current_animation_thread = None
 
 # Data storage path
 DATA_DIR = Path("/data")
@@ -179,72 +185,34 @@ class PngRequest(BaseModel):
 @app.post("/show/icon")
 def show_icon(req: IconRequest):
     """Display LaMetric icon (8x8 JPG) or custom WI icon"""
+    global current_animation_thread
     
     print(f"[SHOW_ICON] Received request for icon_id: {req.icon_id}")
-    print(f"[SHOW_ICON] icon_id type: {type(req.icon_id)}, repr: {repr(req.icon_id)}")
-    print(f"[SHOW_ICON] Starts with WI? {req.icon_id.startswith('WI')}")
     
-    # Check if it's a custom WI icon
+    sequence: List[tuple[List[List[int]], float]] = []
+    
+    # --- 1. PREPARE SEQUENCE ---
+    
+    # CASE A: Custom WI Icon
     if req.icon_id.startswith("WI"):
-        print(f"[SHOW_ICON] Custom icon detected: {req.icon_id}")
         icons = load_custom_icons()
-        print(f"[SHOW_ICON] Loaded {len(icons)} icons from storage")
-        print(f"[SHOW_ICON] Available icons: {list(icons.keys())}")
-        
         if req.icon_id not in icons:
-            print(f"[SHOW_ICON] ERROR: Icon {req.icon_id} not found!")
             raise HTTPException(status_code=404, detail=f"Icône personnalisée {req.icon_id} introuvable")
         
-        print(f"[SHOW_ICON] Found icon {req.icon_id}, processing...")
         icon_data = icons[req.icon_id]
-        
-        # Handle both animated (frames) and static (grid) icons
         frames_data = icon_data.get("frames") or [icon_data.get("grid")]
-        fps = icon_data.get("fps", 8)
+        base_fps = icon_data.get("fps", 8)
         
-        # If it's animated and animation is requested
-        if len(frames_data) > 1 and req.animate:
-            # Override FPS if specified
-            if req.fps and req.fps > 0:
-                fps = req.fps
+        # Determine FPS
+        fps = req.fps if (req.fps and req.fps > 0) else base_fps
+        duration = 1.0 / fps
+        
+        # If animation disabled, just take first frame
+        if not req.animate:
+            frames_data = [frames_data[0]]
             
-            delay = 1.0 / fps
-            loop_count = 0
-            
-            while True:
-                for grid in frames_data:
-                    # Apply transformations if needed
-                    if req.rotate or req.flip_h or req.flip_v:
-                        # Build 8x8 image for transformations
-                        img = Image.new("RGB", (8, 8))
-                        pixels = img.load()
-                        for y in range(8):
-                            for x in range(8):
-                                rgb = hex_to_rgb(grid[y][x])
-                                pixels[x, y] = rgb
-                        
-                        colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
-                    else:
-                        # Flatten 8x8 grid to 64-pixel array
-                        colors = []
-                        for row in grid:
-                            for hex_color in row:
-                                rgb = hex_to_rgb(hex_color)
-                                colors.append(list(rgb))
-                    
-                    send_frame(req.host, colors, brightness=req.brightness)
-                    time.sleep(delay)
-                
-                loop_count += 1
-                if req.loop > 0 and loop_count >= req.loop:
-                    break
-            
-            return {"ok": True, "frames": len(frames_data), "fps": fps}
-        else:
-            # Static icon or single frame
-            grid = frames_data[0]
-            
-            # Apply transformations if needed
+        for grid in frames_data:
+            # Convert grid to colors
             if req.rotate or req.flip_h or req.flip_v:
                 # Build 8x8 image for transformations
                 img = Image.new("RGB", (8, 8))
@@ -253,73 +221,82 @@ def show_icon(req: IconRequest):
                     for x in range(8):
                         rgb = hex_to_rgb(grid[y][x])
                         pixels[x, y] = rgb
-                
                 colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
             else:
-                # Flatten 8x8 grid to 64-pixel array
+                # Direct conversion
                 colors = []
                 for row in grid:
                     for hex_color in row:
                         rgb = hex_to_rgb(hex_color)
                         colors.append(list(rgb))
             
-            print(f"[SHOW_ICON] About to send frame to {req.host}")
-            print(f"[SHOW_ICON] Colors array length: {len(colors)} (should be 64)")
-            print(f"[SHOW_ICON] First pixel: {colors[0] if colors else 'empty'}")
-            send_frame(req.host, colors, brightness=req.brightness)
-            print(f"[SHOW_ICON] Frame sent successfully")
-            return {"ok": True, "source": "custom"}
-    
-    # LaMetric icon handling (original code)
-    # Download 8x8 image from LaMetric (can be JPG or GIF)
-    url = f"https://developer.lametric.com/content/apps/icon_thumbs/{req.icon_id}"
-    try:
-        r = requests.get(url, timeout=8)
-        if not r.ok:
-            raise HTTPException(status_code=404, detail=f"Icône LaMetric {req.icon_id} introuvable")
-        
-        # Load image (JPG or GIF)
-        img = Image.open(BytesIO(r.content))
+            sequence.append((colors, duration))
 
-        # If animated GIF and animation requested, play all frames
-        if getattr(img, 'is_animated', False) and req.animate:
-            frames: List[Image.Image] = []
-            durations: List[float] = []
-            for frame in ImageSequence.Iterator(img):
-                f = frame.convert("RGBA")
-                if f.size != (8, 8):
-                    f = f.resize((8, 8), Image.Resampling.NEAREST)
-                if req.color:
-                    f = recolor_nontransparent(f, hex_to_rgb(req.color))
-                frames.append(f)
-                durations.append(frame.info.get("duration", 100) / 1000.0)
-            if req.fps and req.fps > 0:
-                delay = 1.0 / req.fps
-                durations = [delay] * len(frames)
+    # CASE B: LaMetric Icon
+    else:
+        url = f"https://developer.lametric.com/content/apps/icon_thumbs/{req.icon_id}"
+        try:
+            r = requests.get(url, timeout=8)
+            if not r.ok:
+                raise HTTPException(status_code=404, detail=f"Icône LaMetric {req.icon_id} introuvable")
             
-            # Loop handling: -1 = infinite, otherwise loop count
-            loop_count = 0
-            while True:
-                for f, d in zip(frames, durations):
+            img = Image.open(BytesIO(r.content))
+            
+            # Handle Animation
+            if getattr(img, 'is_animated', False) and req.animate:
+                for frame in ImageSequence.Iterator(img):
+                    f = frame.convert("RGBA")
+                    if f.size != (8, 8):
+                        f = f.resize((8, 8), Image.Resampling.NEAREST)
+                    if req.color:
+                        f = recolor_nontransparent(f, hex_to_rgb(req.color))
+                    
+                    # Calculate duration
+                    frame_duration = frame.info.get("duration", 100) / 1000.0
+                    if req.fps and req.fps > 0:
+                        frame_duration = 1.0 / req.fps
+                        
                     colors = frame_to_colors(f, req.rotate, req.flip_h, req.flip_v)
-                    send_frame(req.host, colors, brightness=req.brightness)
-                    time.sleep(max(0.0, d))
-                loop_count += 1
-                if req.loop > 0 and loop_count >= req.loop:
-                    break
-            return {"ok": True, "source": "lametric", "animated": True, "frames": len(frames)}
+                    sequence.append((colors, frame_duration))
+            else:
+                # Static image
+                if getattr(img, 'is_animated', False):
+                    img.seek(0)
+                img = img.convert("RGBA")
+                if req.color:
+                    img = recolor_nontransparent(img, hex_to_rgb(req.color))
+                colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
+                sequence.append((colors, 1.0))
+                
+        except requests.RequestException as e:
+            raise HTTPException(status_code=502, detail=f"Erreur téléchargement: {str(e)}")
 
-        # Static image path (JPG or non-animated GIF or animate=False)
-        if getattr(img, 'is_animated', False):
-            img.seek(0)
-        img = img.convert("RGBA")
-        if req.color:
-            img = recolor_nontransparent(img, hex_to_rgb(req.color))
-        colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
-        send_frame(req.host, colors, brightness=req.brightness)
-        return {"ok": True, "source": "lametric", "animated": False}
-    except requests.RequestException as e:
-        raise HTTPException(status_code=502, detail=f"Erreur téléchargement: {str(e)}")
+    # --- 2. EXECUTE ---
+    
+    # Always stop previous animation first
+    stop_previous_animation()
+    
+    if not sequence:
+        raise HTTPException(status_code=500, detail="No frames generated")
+        
+    # If single frame, send directly (blocking but fast)
+    if len(sequence) == 1:
+        print("[SHOW_ICON] Sending single static frame")
+        send_frame(req.host, sequence[0][0], brightness=req.brightness)
+        return {"ok": True, "mode": "static"}
+    
+    # If animation, start background thread
+    print(f"[SHOW_ICON] Starting animation thread with {len(sequence)} frames")
+    t = threading.Thread(
+        target=background_animation_loop,
+        args=(req.host, sequence, req.loop, req.brightness),
+        daemon=True
+    )
+    with animation_lock:
+        current_animation_thread = t
+        t.start()
+        
+    return {"ok": True, "mode": "animation", "frames": len(sequence)}
 
 
 @app.post("/show/svg")
@@ -348,6 +325,7 @@ class GifRequest(BaseModel):
     gif: bytes = Field(..., description="GIF animé en bytes base64")
     fps: Optional[int] = Field(None, description="Forcer FPS")
     loop: int = Field(1, description="Nombre de boucles")
+    brightness: int = Field(255, ge=0, le=255, description="Luminosité (0-255)")
 
 
 class CustomIcon(BaseModel):
@@ -361,33 +339,51 @@ class CustomIcon(BaseModel):
 
 @app.post("/show/gif")
 def show_gif(req: GifRequest):
+    global current_animation_thread
+    
     try:
         img = Image.open(BytesIO(req.gif))
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"GIF invalide: {e}")
-    frames = []
-    durations = []
+        
+    sequence: List[tuple[List[List[int]], float]] = []
+    
     for frame in ImageSequence.Iterator(img):
         f = frame.convert("RGBA")
         if f.size != (8,8):
             f = f.resize((8,8), Image.NEAREST)
-        frames.append(f)
-        durations.append(frame.info.get("duration", 100) / 1000.0)
-    if req.fps and req.fps > 0:
-        delay = 1.0 / req.fps
-        durations = [delay] * len(frames)
+            
+        # Calculate duration
+        frame_duration = frame.info.get("duration", 100) / 1000.0
+        if req.fps and req.fps > 0:
+            frame_duration = 1.0 / req.fps
+            
+        colors = frame_to_colors(f)
+        sequence.append((colors, frame_duration))
     
-    # Loop handling: -1 = infinite, otherwise loop count
-    loop_count = 0
-    while True:
-        for f, d in zip(frames, durations):
-            colors = frame_to_colors(f)
-            send_frame(req.host, colors)
-            time.sleep(max(0.0, d))
-        loop_count += 1
-        if req.loop > 0 and loop_count >= req.loop:
-            break
-    return {"ok": True}
+    # Always stop previous animation first
+    stop_previous_animation()
+    
+    if not sequence:
+        raise HTTPException(status_code=500, detail="No frames generated")
+        
+    # If single frame, send directly
+    if len(sequence) == 1:
+        send_frame(req.host, sequence[0][0], brightness=req.brightness)
+        return {"ok": True, "mode": "static"}
+        
+    # If animation, start background thread
+    print(f"[SHOW_GIF] Starting animation thread with {len(sequence)} frames")
+    t = threading.Thread(
+        target=background_animation_loop,
+        args=(req.host, sequence, req.loop, req.brightness),
+        daemon=True
+    )
+    with animation_lock:
+        current_animation_thread = t
+        t.start()
+        
+    return {"ok": True, "mode": "animation", "frames": len(sequence)}
 
 
 @app.get("/")
@@ -626,4 +622,60 @@ def search_icons(q: str = "", limit: int = 20):
                 break
     
     return {"icons": results, "count": len(results)}
+
+
+def stop_previous_animation():
+    global current_animation_thread
+    with animation_lock:
+        if current_animation_thread and current_animation_thread.is_alive():
+            print("[ANIMATION] Stopping previous animation...")
+            stop_animation_event.set()
+            current_animation_thread.join(timeout=2.0)
+            if current_animation_thread.is_alive():
+                print("[ANIMATION] Warning: Thread did not stop gracefully")
+            else:
+                print("[ANIMATION] Previous animation stopped")
+        stop_animation_event.clear()
+
+def background_animation_loop(host: str, sequence: List[tuple[List[List[int]], float]], loop: int, brightness: int):
+    """
+    Runs in a background thread.
+    sequence: List of (colors, duration) tuples
+    """
+    print(f"[ANIMATION] Starting background loop. Frames: {len(sequence)}, Loop: {loop}")
+    loop_count = 0
+    
+    try:
+        while not stop_animation_event.is_set():
+            for colors, duration in sequence:
+                if stop_animation_event.is_set():
+                    break
+                
+                try:
+                    # We use a simplified send_frame here to avoid raising HTTP exceptions in the thread
+                    # or we just catch them
+                    send_frame(host, colors, brightness)
+                except Exception as e:
+                    print(f"[ANIMATION] Error sending frame: {e}")
+                    # Optional: stop animation on error?
+                    # stop_animation_event.set()
+                    # break
+                
+                # Sleep in small chunks to be responsive to stop event
+                elapsed = 0
+                step = 0.05
+                while elapsed < duration:
+                    if stop_animation_event.is_set():
+                        break
+                    time.sleep(min(step, duration - elapsed))
+                    elapsed += step
+            
+            loop_count += 1
+            if loop > 0 and loop_count >= loop:
+                print("[ANIMATION] Loop count reached, stopping.")
+                break
+    except Exception as e:
+        print(f"[ANIMATION] Thread crashed: {e}")
+    finally:
+        print("[ANIMATION] Thread exiting")
 

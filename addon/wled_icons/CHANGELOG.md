@@ -1,5 +1,15 @@
 # Changelog - WLED Icons Add-on
 
+## [0.6.2] - 2025-11-19
+
+### Corrections Critiques
+- 🐛 **Plantages résolus** : Correction complète du système d'animation pour éviter les plantages lors du changement de luminosité
+- 🧵 **Threading** : Les animations tournent maintenant en arrière-plan dans des threads dédiés (non-bloquant)
+- ⛔ **Arrêt propre** : Toute nouvelle animation arrête automatiquement l'animation précédente (évite les conflits WLED)
+- 🔁 **Boucles infinies** : Gestion correcte des boucles infinies (-1) sans bloquer le serveur
+- 💡 **Luminosité GIF** : Support de la luminosité pour les GIFs uploadés (manquait)
+- ⚡ **Réactivité** : L'interface reste réactive pendant la lecture des animations
+
 ## [0.6.1] - 2025-11-19
 
 ### Interface Utilisateur (UI)

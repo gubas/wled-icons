@@ -270,12 +270,13 @@ async function sendGif() {
     
     const fps = document.querySelector('#gifForm [name="fps"]').value;
     const loop = parseInt(document.querySelector('#gifForm [name="loop"]').value || '1');
+    const brightness = parseInt(document.getElementById('brightnessSlider')?.value || 255);
     
     const buf = await file.arrayBuffer();
     const bytes = new Uint8Array(buf);
     const b64 = btoa(String.fromCharCode(...bytes));
     
-    const payload = { host, gif: b64, loop };
+    const payload = { host, gif: b64, loop, brightness };
     if (fps) payload.fps = parseInt(fps);
     
     try {
