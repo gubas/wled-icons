@@ -206,6 +206,24 @@ async function previewIcon() {
     }
 }
 
+async function stopAnimation() {
+    try {
+        const r = await fetch(basePath + '/stop', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (r.ok) {
+            showMsg('⏹️ Animation arrêtée');
+        } else {
+            showMsg('❌ Erreur lors de l\'arrêt');
+        }
+    } catch (e) {
+        console.error('[STOP_ANIMATION] Exception:', e);
+        showMsg('❌ Erreur de connexion');
+    }
+}
+
 async function sendIcon() {
     saveFormValues('f');  // Save values before sending
     

@@ -1,5 +1,14 @@
 # Changelog - WLED Icons Add-on
 
+## [0.6.3] - 2025-11-19
+
+### Interface Utilisateur
+- ⏹️ **Bouton Arrêter** : Ajout d'un bouton pour arrêter l'animation en cours et reprendre le contrôle WLED
+- 🎨 **Éditeur compact** : Boutons d'édition réduits en icônes uniquement et placés sous la grille
+- ↶↷ **Nouvelles icônes** : Remplacement des icônes ⏮️⏭️ par ↶↷ pour undo/redo (plus claires)
+- 📤 **Icône envoi** : Ajout de l'émoji 📤 sur le bouton "Afficher sur WLED"
+- 🚫 **Upload GIF désactivé** : Désactivation temporaire de la fonctionnalité d'upload GIF personnalisé
+
 ## [0.6.2] - 2025-11-19
 
 ### Corrections Critiques

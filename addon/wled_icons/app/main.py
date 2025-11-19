@@ -12,7 +12,7 @@ import time
 import json
 import threading
 
-app = FastAPI(title="WLED Icons Service", version="0.6.2")
+app = FastAPI(title="WLED Icons Service", version="0.6.3")
 
 # Global animation control
 animation_lock = threading.Lock()
@@ -337,53 +337,62 @@ class CustomIcon(BaseModel):
     modified: str
 
 
-@app.post("/show/gif")
-def show_gif(req: GifRequest):
-    global current_animation_thread
-    
-    try:
-        img = Image.open(BytesIO(req.gif))
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"GIF invalide: {e}")
-        
-    sequence: List[tuple[List[List[int]], float]] = []
-    
-    for frame in ImageSequence.Iterator(img):
-        f = frame.convert("RGBA")
-        if f.size != (8,8):
-            f = f.resize((8,8), Image.NEAREST)
-            
-        # Calculate duration
-        frame_duration = frame.info.get("duration", 100) / 1000.0
-        if req.fps and req.fps > 0:
-            frame_duration = 1.0 / req.fps
-            
-        colors = frame_to_colors(f)
-        sequence.append((colors, frame_duration))
-    
-    # Always stop previous animation first
+# Disabled: Custom GIF upload feature
+# @app.post("/show/gif")
+# def show_gif(req: GifRequest):
+# def show_gif(req: GifRequest):
+#     global current_animation_thread
+#     
+#     try:
+#         img = Image.open(BytesIO(req.gif))
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail=f"GIF invalide: {e}")
+#         
+#     sequence: List[tuple[List[List[int]], float]] = []
+#     
+#     for frame in ImageSequence.Iterator(img):
+#         f = frame.convert("RGBA")
+#         if f.size != (8,8):
+#             f = f.resize((8,8), Image.NEAREST)
+#             
+#         # Calculate duration
+#         frame_duration = frame.info.get("duration", 100) / 1000.0
+#         if req.fps and req.fps > 0:
+#             frame_duration = 1.0 / req.fps
+#             
+#         colors = frame_to_colors(f)
+#         sequence.append((colors, frame_duration))
+#     
+#     # Always stop previous animation first
+#     stop_previous_animation()
+#     
+#     if not sequence:
+#         raise HTTPException(status_code=500, detail="No frames generated")
+#         
+#     # If single frame, send directly
+#     if len(sequence) == 1:
+#         send_frame(req.host, sequence[0][0], brightness=req.brightness)
+#         return {"ok": True, "mode": "static"}
+#         
+#     # If animation, start background thread
+#     print(f"[SHOW_GIF] Starting animation thread with {len(sequence)} frames")
+#     t = threading.Thread(
+#         target=background_animation_loop,
+#         args=(req.host, sequence, req.loop, req.brightness),
+#         daemon=True
+#     )
+#     with animation_lock:
+#         current_animation_thread = t
+#         t.start()
+#         
+#     return {"ok": True, "mode": "animation", "frames": len(sequence)}
+
+
+@app.post("/stop")
+def stop_animation():
+    """Stop any currently running animation"""
     stop_previous_animation()
-    
-    if not sequence:
-        raise HTTPException(status_code=500, detail="No frames generated")
-        
-    # If single frame, send directly
-    if len(sequence) == 1:
-        send_frame(req.host, sequence[0][0], brightness=req.brightness)
-        return {"ok": True, "mode": "static"}
-        
-    # If animation, start background thread
-    print(f"[SHOW_GIF] Starting animation thread with {len(sequence)} frames")
-    t = threading.Thread(
-        target=background_animation_loop,
-        args=(req.host, sequence, req.loop, req.brightness),
-        daemon=True
-    )
-    with animation_lock:
-        current_animation_thread = t
-        t.start()
-        
-    return {"ok": True, "mode": "animation", "frames": len(sequence)}
+    return {"ok": True, "message": "Animation stopped"}
 
 
 @app.get("/")

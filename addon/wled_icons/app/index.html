@@ -72,7 +72,10 @@
                     </div>
                 </div>
                 
-                <button type='button' onclick='sendIcon()'>Afficher sur WLED</button>
+                <div style='display: flex; gap: 0.5rem;'>
+                    <button type='button' onclick='sendIcon()' style='flex: 1;'>📤 Afficher sur WLED</button>
+                    <button type='button' onclick='stopAnimation()' class='btn-secondary' style='flex: 0 0 auto;'>⏹️ Arrêter</button>
+                </div>
             </form>
         </div>
         
@@ -124,17 +127,20 @@
                             <input type='color' id='customColor' value='#000000' title='Sélecteur de couleur'/>
                         </div>
                     </div>
-                    <canvas id='pixelCanvas'></canvas>
-                </div>
-                
-                <div class='editor-actions'>
-                    <button type='button' onclick='undo()' class='btn-secondary' title='Annuler'>⏮️</button>
-                    <button type='button' onclick='redo()' class='btn-secondary' title='Refaire'>⏭️</button>
-                    <button type='button' onclick='toggleSymmetry("h")' id='btnSymH' class='btn-secondary' title='Symétrie horizontale'>↔️</button>
-                    <button type='button' onclick='toggleSymmetry("v")' id='btnSymV' class='btn-secondary' title='Symétrie verticale'>↕️</button>
-                    <button type='button' onclick='clearCanvas()' class='btn-secondary'>🗑️ Effacer</button>
-                    <button type='button' onclick='fillCanvas()' class='btn-secondary'>🎨 Remplir</button>
-                    <button type='button' onclick='openSaveDialog()' class='btn-primary'>💾 Sauvegarder</button>
+                    
+                    <div style='display: flex; flex-direction: column; gap: 1rem;'>
+                        <canvas id='pixelCanvas'></canvas>
+                        
+                        <div class='editor-actions'>
+                            <button type='button' onclick='undo()' class='btn-secondary btn-icon' title='Annuler'>↶</button>
+                            <button type='button' onclick='redo()' class='btn-secondary btn-icon' title='Refaire'>↷</button>
+                            <button type='button' onclick='toggleSymmetry("h")' id='btnSymH' class='btn-secondary btn-icon' title='Symétrie horizontale'>↔️</button>
+                            <button type='button' onclick='toggleSymmetry("v")' id='btnSymV' class='btn-secondary btn-icon' title='Symétrie verticale'>↕️</button>
+                            <button type='button' onclick='clearCanvas()' class='btn-secondary btn-icon' title='Effacer'>🗑️</button>
+                            <button type='button' onclick='fillCanvas()' class='btn-secondary btn-icon' title='Remplir'>🎨</button>
+                            <button type='button' onclick='openSaveDialog()' class='btn-primary'>💾 Sauvegarder</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -180,6 +186,7 @@
             </div>
         </div>
         
+        <!--
         <div class='card'>
             <div class='section-title'>Upload GIF personnalisé</div>
             <form id='gifForm'>
@@ -198,6 +205,7 @@
                 <button type='button' onclick='sendGif()'>Afficher GIF</button>
             </form>
         </div>
+        -->
         
         <div id='msg'></div>
     </div>
