@@ -12,7 +12,7 @@ import time
 import json
 import threading
 
-app = FastAPI(title="WLED Icons Service", version="0.6.3")
+app = FastAPI(title="WLED Icons Service", version="0.6.4")
 
 # Global animation control
 animation_lock = threading.Lock()

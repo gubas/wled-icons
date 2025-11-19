@@ -128,19 +128,20 @@
                         </div>
                     </div>
                     
-                    <div style='display: flex; flex-direction: column; gap: 1rem;'>
+                    <div style='display: flex; gap: 1rem; align-items: flex-start;'>
                         <canvas id='pixelCanvas'></canvas>
                         
-                        <div class='editor-actions'>
-                            <button type='button' onclick='undo()' class='btn-secondary btn-icon' title='Annuler'>↶</button>
-                            <button type='button' onclick='redo()' class='btn-secondary btn-icon' title='Refaire'>↷</button>
-                            <button type='button' onclick='toggleSymmetry("h")' id='btnSymH' class='btn-secondary btn-icon' title='Symétrie horizontale'>↔️</button>
-                            <button type='button' onclick='toggleSymmetry("v")' id='btnSymV' class='btn-secondary btn-icon' title='Symétrie verticale'>↕️</button>
-                            <button type='button' onclick='clearCanvas()' class='btn-secondary btn-icon' title='Effacer'>🗑️</button>
-                            <button type='button' onclick='fillCanvas()' class='btn-secondary btn-icon' title='Remplir'>🎨</button>
-                            <button type='button' onclick='openSaveDialog()' class='btn-primary'>💾 Sauvegarder</button>
+                        <div style='display: flex; flex-direction: column; gap: 0.25rem;'>
+                            <button type='button' onclick='undo()' class='btn-secondary btn-icon' title='Annuler' style='width: 32px; height: 32px; padding: 0; font-size: 1rem;'>↶</button>
+                            <button type='button' onclick='redo()' class='btn-secondary btn-icon' title='Refaire' style='width: 32px; height: 32px; padding: 0; font-size: 1rem;'>↷</button>
+                            <button type='button' onclick='toggleSymmetry("h")' id='btnSymH' class='btn-secondary btn-icon' title='Symétrie horizontale' style='width: 32px; height: 32px; padding: 0; font-size: 0.9rem;'>↔️</button>
+                            <button type='button' onclick='toggleSymmetry("v")' id='btnSymV' class='btn-secondary btn-icon' title='Symétrie verticale' style='width: 32px; height: 32px; padding: 0; font-size: 0.9rem;'>↕️</button>
+                            <button type='button' onclick='clearCanvas()' class='btn-secondary btn-icon' title='Effacer' style='width: 32px; height: 32px; padding: 0; font-size: 0.9rem;'>🗑️</button>
+                            <button type='button' onclick='fillCanvas()' class='btn-secondary btn-icon' title='Remplir' style='width: 32px; height: 32px; padding: 0; font-size: 0.9rem;'>🎨</button>
                         </div>
                     </div>
+                    
+                    <button type='button' onclick='openSaveDialog()' class='btn-primary' style='margin-top: 1rem;'>💾 Sauvegarder</button>
                 </div>
             </div>
             
