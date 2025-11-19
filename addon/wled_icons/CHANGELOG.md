@@ -1,5 +1,18 @@
 # Changelog - WLED Icons Add-on
 
+## [0.6.5] - 2025-11-19
+
+### Interface Utilisateur
+- 🔧 **Icône Configuration** : Ajout d'une icône engrenage (mdi-cog) au titre du bloc Configuration pour une identification immédiate des réglages
+- 💡 **Icône principale unifiée** : Remplacement de l'ancien SVG par l'icône officielle Home Assistant (mdi:led-strip-variant) utilisée dans la barre latérale pour cohérence visuelle
+- 🧩 **Dépendance MDI** : Intégration de la webfont Material Design Icons via CDN pour afficher les icônes (aucun impact fonctionnel côté backend)
+
+### Technique
+- 📦 Aucun changement serveur, uniquement frontend (`index.html`) + ajout de la feuille de style MDI CDN
+- 🆙 Version incrémentée (`config.json` → 0.6.5)
+
+# Changelog - WLED Icons Add-on
+
 ## [0.6.4] - 2025-11-19
 
 ### Interface Utilisateur

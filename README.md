@@ -14,6 +14,7 @@ Affichez des icônes **LaMetric animées** sur votre matrice WLED 8x8 directemen
 - 🔄 **Transformations** : Rotation (0/90/180/270°) et miroirs (H/V) pour orientation matrice
 - 🎨 **Recolorisation** : Changement de couleur des icônes monochromes
 - 💡 **Contrôle luminosité** : Slider 1-255 pour ajuster l'intensité avant envoi WLED
+- 💾 **Valeurs persistées** : Les champs (hôte, ID, couleur, rotation, FPS, boucles, luminosité) sont restaurés depuis le navigateur
 - 🎨 **Outil pipette** : Copier la couleur d'un pixel en cliquant dessus
 - 🪞 **Symétrie H/V** : Dessiner en miroir horizontal/vertical automatiquement
 - ⏮️⏭️ **Undo/Redo** : Historique de 50 états avec raccourcis Ctrl+Z / Ctrl+Y
@@ -21,6 +22,8 @@ Affichez des icônes **LaMetric animées** sur votre matrice WLED 8x8 directemen
 - 🌓 **Interface moderne** : UI responsive avec support dark mode
 - 🏠 **Intégration HA** : Services Home Assistant pour automatisations
 - 🔌 **API REST étendue** : 7 endpoints pour automatisation avancée (voir [API.md](./API.md))
+- 🔧 **Icône configuration** : Icône engrenage visuelle pour repérer la zone réglages
+- 🖼️ **Icône principale unifiée** : Usage de `mdi-led-strip-variant` (cohérence barre latérale)
 
 ## 📦 Architecture
 
@@ -273,6 +276,12 @@ docker run --rm -p 8234:8234 wled_icons_test
 - **Major** : Breaking changes API
 - **Minor** : Nouvelles fonctionnalités
 - **Patch** : Bugfixes
+
+### 0.6.5 (UI icônes)
+- Unification de l'icône principale avec celle du panneau Home Assistant
+- Ajout icône engrenage pour le bloc Configuration
+- Intégration de la webfont Material Design Icons (CDN)
+- Persistance explicite de la luminosité dans localStorage
 
 ### Publication
 

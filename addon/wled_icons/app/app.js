@@ -12,6 +12,7 @@ const STORAGE_KEYS = {
     animate: 'wled_animate',
     icon_fps: 'wled_icon_fps',
     icon_loop: 'wled_icon_loop',
+    brightness: 'wled_brightness',
     gif_fps: 'wled_gif_fps',
     gif_loop: 'wled_gif_loop'
 };
@@ -110,9 +111,19 @@ window.addEventListener('DOMContentLoaded', () => {
     // Brightness slider
     const brightnessSlider = document.getElementById('brightnessSlider');
     const brightnessValue = document.getElementById('brightnessValue');
+    
+    // Load saved brightness value
+    const savedBrightness = localStorage.getItem(STORAGE_KEYS.brightness);
+    if (brightnessSlider && savedBrightness) {
+        brightnessSlider.value = savedBrightness;
+        if (brightnessValue) brightnessValue.textContent = savedBrightness;
+    }
+    
+    // Update brightness display on change
     if (brightnessSlider && brightnessValue) {
         brightnessSlider.addEventListener('input', (e) => {
             brightnessValue.textContent = e.target.value;
+            localStorage.setItem(STORAGE_KEYS.brightness, e.target.value);
         });
     }
 

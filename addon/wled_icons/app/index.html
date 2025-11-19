@@ -5,14 +5,13 @@
     <meta name='viewport' content='width=device-width,initial-scale=1'/>
     <title>WLED Icons</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
 </head>
 <body>
     <div class='container'>
         <div class='card card-header'>
-            <h1>
-                <svg viewBox='0 0 24 24'>
-                    <path d='M12,2L2,7V11C2,16.5 6,21.8 12,23C18,21.8 22,16.5 22,11V7L12,2M12,4.2L20,8.3V11C20,15.5 16.8,19.9 12,21C7.2,19.9 4,15.5 4,11V8.3L12,4.2M11,7V13H13V7H11M11,15V17H13V15H11Z'/>
-                </svg>
+            <h1 style='display:flex; align-items:center; gap:0.5rem;'>
+                <span class="mdi mdi-led-strip-variant" style='font-size:2rem; line-height:1;'></span>
                 WLED Icons
             </h1>
             <p class='subtitle'>Affichage d'icônes LaMetric sur matrice LED 8x8</p>
@@ -20,7 +19,7 @@
         </div>
         
         <div class='card'>
-            <div class='section-title'>Configuration</div>
+            <div class='section-title'><span class="mdi mdi-cog" style='margin-right:0.35rem;'></span>Configuration</div>
             <form id='f'>
                 <label>Adresse WLED</label>
                 <input name='host' type='text' required placeholder='192.168.1.50' autocomplete='off'/>
@@ -72,9 +71,9 @@
                     </div>
                 </div>
                 
-                <div style='display: flex; gap: 0.5rem;'>
-                    <button type='button' onclick='sendIcon()' style='flex: 1;'>📤 Afficher sur WLED</button>
-                    <button type='button' onclick='stopAnimation()' class='btn-secondary' style='flex: 0 0 auto;'>⏹️ Arrêter</button>
+                <div style='display: flex; gap: 0.5rem; align-items: stretch;'>
+                    <button type='button' onclick='sendIcon()' style='flex: 1;' title='Afficher sur WLED'>📤</button>
+                    <button type='button' onclick='stopAnimation()' class='btn-secondary' title='Arrêter l'\''animation' style='padding: 0 1rem;'>⏹️</button>
                 </div>
             </form>
         </div>
