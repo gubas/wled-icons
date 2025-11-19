@@ -11,7 +11,7 @@ import cairosvg
 import time
 import json
 
-app = FastAPI(title="WLED Icons Service", version="0.5.8")
+app = FastAPI(title="WLED Icons Service", version="0.6.1")
 
 # Data storage path
 DATA_DIR = Path("/data")
@@ -161,6 +161,7 @@ class IconRequest(BaseModel):
     animate: bool = Field(True, description="Animer si l'icône LaMetric est un GIF")
     fps: Optional[int] = Field(None, description="Forcer FPS pour les GIFs (sinon utiliser la durée GIF)")
     loop: int = Field(1, description="Nombre de boucles pour les GIFs")
+    brightness: int = Field(255, ge=0, le=255, description="Luminosité (0-255)")
 
 
 class SvgRequest(BaseModel):
@@ -231,7 +232,7 @@ def show_icon(req: IconRequest):
                                 rgb = hex_to_rgb(hex_color)
                                 colors.append(list(rgb))
                     
-                    send_frame(req.host, colors)
+                    send_frame(req.host, colors, brightness=req.brightness)
                     time.sleep(delay)
                 
                 loop_count += 1
@@ -265,7 +266,7 @@ def show_icon(req: IconRequest):
             print(f"[SHOW_ICON] About to send frame to {req.host}")
             print(f"[SHOW_ICON] Colors array length: {len(colors)} (should be 64)")
             print(f"[SHOW_ICON] First pixel: {colors[0] if colors else 'empty'}")
-            send_frame(req.host, colors)
+            send_frame(req.host, colors, brightness=req.brightness)
             print(f"[SHOW_ICON] Frame sent successfully")
             return {"ok": True, "source": "custom"}
     
@@ -301,7 +302,7 @@ def show_icon(req: IconRequest):
             while True:
                 for f, d in zip(frames, durations):
                     colors = frame_to_colors(f, req.rotate, req.flip_h, req.flip_v)
-                    send_frame(req.host, colors)
+                    send_frame(req.host, colors, brightness=req.brightness)
                     time.sleep(max(0.0, d))
                 loop_count += 1
                 if req.loop > 0 and loop_count >= req.loop:
@@ -315,7 +316,7 @@ def show_icon(req: IconRequest):
         if req.color:
             img = recolor_nontransparent(img, hex_to_rgb(req.color))
         colors = frame_to_colors(img, req.rotate, req.flip_h, req.flip_v)
-        send_frame(req.host, colors)
+        send_frame(req.host, colors, brightness=req.brightness)
         return {"ok": True, "source": "lametric", "animated": False}
     except requests.RequestException as e:
         raise HTTPException(status_code=502, detail=f"Erreur téléchargement: {str(e)}")

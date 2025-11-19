@@ -32,6 +32,12 @@
                 
                 <label>Couleur personnalisée (optionnel)</label>
                 <input name='color' type='text' placeholder='#18BCF2' autocomplete='off'/>
+
+                <div class='brightness-control' style='margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border);'>
+                    <label style='margin: 0; font-size: 0.9rem; white-space: nowrap;'>💡 Luminosité:</label>
+                    <input type='range' name='brightness' id='brightnessSlider' min='1' max='255' value='255' style='flex: 1; cursor: pointer;'/>
+                    <span id='brightnessValue' style='min-width: 3rem; text-align: right; font-weight: 600;'>255</span>
+                </div>
                 
                 <button type='button' onclick='toggleOrientation()' class='btn-secondary' style='margin-top: 1rem'>⚙️ Options d'orientation</button>
                 
@@ -122,8 +128,6 @@
                 </div>
                 
                 <div class='editor-actions'>
-                    <button type='button' onclick='toggleTool("draw")' id='btnDraw' class='btn-tool active' title='Outil dessin'>✏️</button>
-                    <button type='button' onclick='toggleTool("pipette")' id='btnPipette' class='btn-tool' title='Pipette'>🎨</button>
                     <button type='button' onclick='undo()' class='btn-secondary' title='Annuler'>⏮️</button>
                     <button type='button' onclick='redo()' class='btn-secondary' title='Refaire'>⏭️</button>
                     <button type='button' onclick='toggleSymmetry("h")' id='btnSymH' class='btn-secondary' title='Symétrie horizontale'>↔️</button>
@@ -131,13 +135,6 @@
                     <button type='button' onclick='clearCanvas()' class='btn-secondary'>🗑️ Effacer</button>
                     <button type='button' onclick='fillCanvas()' class='btn-secondary'>🎨 Remplir</button>
                     <button type='button' onclick='openSaveDialog()' class='btn-primary'>💾 Sauvegarder</button>
-                    <div class='brightness-control' style='grid-column: span 2; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border);'>
-                        <label style='margin: 0; font-size: 0.9rem; white-space: nowrap;'>💡 Luminosité:</label>
-                        <input type='range' id='brightnessSlider' min='1' max='255' value='255' style='flex: 1; cursor: pointer;'/>
-                        <span id='brightnessValue' style='min-width: 3rem; text-align: right; font-weight: 600;'>255</span>
-                    </div>
-                    <button type='button' onclick='sendPixelArt()'>📤 Envoyer WLED</button>
-                    <button type='button' onclick='exportPixelArt()' class='btn-secondary' style='grid-column: span 2'>⬇️ Télécharger PNG</button>
                 </div>
             </div>
             

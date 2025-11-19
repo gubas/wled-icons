@@ -225,8 +225,9 @@ async function sendIcon() {
     const animate = fd.get('animate') === 'on';
     const fpsStr = fd.get('icon_fps');
     const loop = parseInt(fd.get('icon_loop') || '1');
+    const brightness = parseInt(fd.get('brightness') || '255');
     
-    const body = { host, icon_id, color, rotate, flip_h, flip_v, animate, loop };
+    const body = { host, icon_id, color, rotate, flip_h, flip_v, animate, loop, brightness };
     if (fpsStr) body.fps = parseInt(fpsStr);
     
     console.log('[SEND_ICON] Sending request:', body);
@@ -340,11 +341,15 @@ function toggleTool(tool) {
     currentTool = tool;
     document.querySelectorAll('.btn-tool').forEach(btn => btn.classList.remove('active'));
     const canvas = document.getElementById('pixelCanvas');
+    
+    const btnDraw = document.getElementById('btnDraw');
+    const btnPipette = document.getElementById('btnPipette');
+
     if (tool === 'draw') {
-        document.getElementById('btnDraw').classList.add('active');
+        if (btnDraw) btnDraw.classList.add('active');
         canvas.style.cursor = 'crosshair';
     } else if (tool === 'pipette') {
-        document.getElementById('btnPipette').classList.add('active');
+        if (btnPipette) btnPipette.classList.add('active');
         canvas.style.cursor = 'cell';
     }
 }

@@ -1,5 +1,12 @@
 # Changelog - WLED Icons Add-on
 
+## [0.6.1] - 2025-11-19
+
+### Interface Utilisateur (UI)
+- 💡 **Luminosité centralisée** : Déplacement du slider de luminosité dans le bloc de configuration principal pour une meilleure ergonomie.
+- 🧹 **Éditeur épuré** : Suppression des boutons redondants dans l'éditeur (Outils Dessin/Pipette, Envoyer WLED, Télécharger PNG).
+- 🔄 **Flux simplifié** : L'envoi vers WLED se fait désormais uniquement via le bouton principal, prenant en compte tous les paramètres (y compris la luminosité).
+
 ## [0.6.0] - 2025-11-18
 
 ### Refactoring
