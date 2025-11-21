@@ -57,6 +57,7 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
         animate: bool = call.data.get("animate", True)
         fps: int | None = call.data.get("fps")
         loop: int = call.data.get("loop", 1)
+        brightness: int = call.data.get("brightness", 255)
         addon_url: str = call.data.get("addon_url", addon_default or "http://localhost:8234")
         
         if not host or not icon_id:
@@ -72,7 +73,8 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
                 "flip_h": flip_h,
                 "flip_v": flip_v,
                 "animate": animate,
-                "loop": loop
+                "loop": loop,
+                "brightness": brightness
             }
             if color:
                 payload["color"] = color
@@ -88,37 +90,30 @@ async def async_setup_entry(hass: HomeAssistant, entry) -> bool:
         except Exception as e:
             _LOGGER.exception("Echec affichage icône LaMetric: %s", e)
 
-    async def async_show_gif(call: ServiceCall):
-        """Display a custom GIF animation on WLED"""
+    async def async_stop(call: ServiceCall):
+        """Stop the current animation on WLED"""
         host: str = call.data.get("host", host_default)
-        file: str = call.data.get("file")
-        fps: int | None = call.data.get("fps")
-        loop: int = call.data.get("loop", 1)
         addon_url: str = call.data.get("addon_url", addon_default or "http://localhost:8234")
         
-        if not host or not file:
-            _LOGGER.error("host et file requis")
+        if not host:
+            _LOGGER.error("host requis")
             return
         
         try:
             import aiohttp
-            with open(file, 'rb') as f:
-                data = base64.b64encode(f.read()).decode('ascii')
-            payload: dict[str, Any] = {"host": host, "gif": data, "loop": loop}
-            if fps:
-                payload["fps"] = fps
+            payload: dict[str, Any] = {"host": host}
             async with aiohttp.ClientSession() as session:
-                async with session.post(f"{addon_url}/show/gif", json=payload, timeout=30) as resp:
+                async with session.post(f"{addon_url}/stop", json=payload, timeout=10) as resp:
                     if resp.status >= 400:
                         text = await resp.text()
-                        _LOGGER.error("Addon GIF error %s: %s", resp.status, text)
+                        _LOGGER.error("Stop error %s: %s", resp.status, text)
                     else:
-                        _LOGGER.info("GIF displayed on %s", host)
+                        _LOGGER.info("Animation stopped on %s", host)
         except Exception as e:
-            _LOGGER.exception("Echec affichage GIF: %s", e)
+            _LOGGER.exception("Échec arrêt animation: %s", e)
 
     hass.services.async_register(DOMAIN, "show_lametric", async_show_lametric)
-    hass.services.async_register(DOMAIN, "show_gif", async_show_gif)
+    hass.services.async_register(DOMAIN, "stop", async_stop)
 
     _LOGGER.info("wled_icons services registered (entry %s)", entry.entry_id)
     return True

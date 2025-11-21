@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.2] - 2025-11-21
+
+### Intégration Home Assistant
+- 🔄 **Auto-installation** : L'intégration se copie automatiquement dans `/config/custom_components/` au démarrage de l'add-on
+- 🗑️ **Service `show_gif` supprimé** : Endpoint désactivé côté add-on, service retiré de l'intégration
+- 💡 **Paramètre `brightness` ajouté** : Contrôle de la luminosité (0-255) dans le service `show_lametric`
+- ⏹️ **Nouveau service `stop`** : Arrêt des animations en cours depuis Home Assistant
+- 🔄 **Mise à jour simplifiée** : L'intégration se met à jour automatiquement avec l'add-on (plus besoin de copie manuelle)
+
+### Technique
+- 📦 Lien symbolique `addon/wled_icons/integration` vers `custom_components/wled_icons`
+- 🐚 Script `run.sh` vérifie et copie l'intégration au démarrage
+- 🔧 Dockerfile copie l'intégration dans l'image Docker
+
 ## [0.7.1] - 2025-11-21
 
 ### Corrections

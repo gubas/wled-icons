@@ -39,6 +39,7 @@ COPY --from=builder /root/.local /root/.local
 
 # Copie du code applicatif
 COPY app /app/app
+COPY integration /app/integration
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 

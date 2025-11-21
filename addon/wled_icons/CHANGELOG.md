@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.2] - 2025-11-21
+
+### Intégration Home Assistant
+- 🔄 **Auto-installation** : L'intégration se copie automatiquement dans `/config/custom_components/` au démarrage de l'add-on
+- 🗑️ **Service `show_gif` supprimé** : Endpoint désactivé côté add-on, service retiré de l'intégration
+- 💡 **Paramètre `brightness` ajouté** : Contrôle de la luminosité (0-255) dans le service `show_lametric`
+- ⏹️ **Nouveau service `stop`** : Arrêt des animations en cours depuis Home Assistant
+- 🔄 **Mise à jour simplifiée** : Plus besoin de copier manuellement l'intégration, elle se met à jour avec l'add-on
+
 ## [0.7.1] - 2025-11-21
 
 ### Corrections

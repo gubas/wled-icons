@@ -30,27 +30,20 @@ show_lametric:
     loop:
       description: Nombre de boucles (-1 pour infini)
       example: 1
+    brightness:
+      description: Luminosité (0-255)
+      example: 200
     addon_url:
       description: URL de l'add-on (optionnel si configuré)
       example: "http://localhost:8234"
 
-show_gif:
-  name: Show Custom GIF
-  description: Affiche un GIF 8x8 personnalisé sur WLED
+stop:
+  name: Stop Animation
+  description: Arrête l'animation en cours sur WLED
   fields:
-    file:
-      description: Chemin GIF (accessible par Home Assistant)
-      example: "/config/www/anim.gif"
-      required: true
     host:
       description: Adresse IP/host WLED (optionnel si configuré)
       example: "192.168.1.50"
-    fps:
-      description: FPS forcé pour animation (optionnel)
-      example: 8
-    loop:
-      description: Nombre de boucles (-1 pour infini)
-      example: 1
     addon_url:
       description: URL de l'add-on (optionnel si configuré)
       example: "http://localhost:8234"
