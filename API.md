@@ -1,6 +1,6 @@
 # Documentation API REST - WLED Icons
 
-Version: 0.5.8
+Version: 0.6.7
 
 L'add-on WLED Icons expose une API REST complète pour l'automatisation et le contrôle avancé des panneaux WLED depuis Home Assistant ou d'autres outils.
 
@@ -216,14 +216,14 @@ Affiche plusieurs icônes séquentiellement (diaporama).
 
 ---
 
-### `POST /api/show_icon`
+### `POST /show/icon`
 
-Affiche une icône LaMetric ou personnalisée sur WLED.
+Affiche une icône LaMetric ou personnalisée (WI) sur WLED.
 
 **Body :**
 ```json
 {
-  "icon_id": "WI1731932400123456",
+  "icon_id": "1486",
   "host": "192.168.1.100",
   "color": "#FF0000",
   "brightness": 200,
@@ -232,7 +232,48 @@ Affiche une icône LaMetric ou personnalisée sur WLED.
   "flip_v": false,
   "animate": true,
   "fps": 8,
-  "loop": 0
+  "loop": -1
+}
+```
+
+**Paramètres :**
+- `icon_id` : ID LaMetric (ex: "1486") ou ID personnalisé (ex: "WI1731932400123456")
+- `host` : Adresse IP du WLED
+- `color` : Couleur hex pour recolorisation (optionnel)
+- `brightness` : Luminosité 1-255 (défaut: 255)
+- `rotate` : Rotation 0/90/180/270° (défaut: 0)
+- `flip_h` : Miroir horizontal (défaut: false)
+- `flip_v` : Miroir vertical (défaut: false)
+- `animate` : Activer l'animation pour les GIFs (défaut: true)
+- `fps` : FPS forcé pour l'animation (optionnel, sinon timing GIF)
+- `loop` : Nombre de boucles, -1 = infini (défaut: 1)
+
+**Réponse :**
+```json
+{
+  "ok": true,
+  "source": "lametric"
+}
+```
+
+---
+
+### `POST /stop`
+
+Arrête l'animation en cours et rend la main à WLED.
+
+**Body :**
+```json
+{
+  "host": "192.168.1.100"
+}
+```
+
+**Réponse :**
+```json
+{
+  "ok": true,
+  "message": "Animation stopped"
 }
 ```
 

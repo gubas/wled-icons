@@ -15,3 +15,13 @@ htmlcov/
 *.swp
 *.swo
 *~
+.venv/
+venv/
+env/
+.env
+*.db
+*.sqlite
+*.sqlite3
+node_modules/
+.vscode/
+.idea/

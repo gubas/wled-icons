@@ -1,5 +1,0 @@
-[33m96dc7b3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31mwled-icons/main[m[33m, [m[1;31mwled-icons/HEAD[m[33m)[m feat: add options to release WLED control, restore previous state, and automatically save WLED state before updates.
-[33m17cc70b[m refactor: Migrate API tests to a pytest suite, enhance icon lifecycle testing, and update addon configuration and documentation.
-[33md9fa123[m feat: Update to version 0.6.5; unify main icon, add configuration icon, and implement brightness persistence
-[33m3c2075b[m feat: Update WLED Icons to version 0.6.4; enhance UI layout and button compactness
-[33m00e1817[m feat: Update WLED Icons to version 0.6.3; add stop animation feature and UI enhancements

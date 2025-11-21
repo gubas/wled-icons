@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.7] - 2025-11-21
+
+### Interface Utilisateur
+- 📐 **Layout optimisé** : Le bloc "Créer une Icône Personnalisée" occupe maintenant tout l'espace disponible (colonne Configuration à largeur fixe)
+- ⬆️ **Alignement amélioré** : Les 3 blocs principaux sont alignés en haut pour une meilleure cohérence visuelle
+- 📦 **En-tête compact** : Réduction de l'espace occupé par le bloc titre (padding, marges, tailles de police réduites)
+- ⚖️ **Boutons d'action équilibrés** : Les boutons "Envoyer" (📤) et "Arrêter" (⏹️) ont maintenant la même largeur et hauteur
+- 💾 **Bouton Sauvegarder centré** : Positionné au centre sous la grille de dessin pour un meilleur équilibre visuel
+
+## [0.6.6] - 2025-11-21
+
+### Interface Utilisateur
+- 🎬 **Options d'animation masquables** : Les contrôles d'animation (FPS, boucles) sont maintenant repliables via un bouton "🎬 Options d'animation" pour une interface plus épurée
+- 🧹 **Cohérence UI** : Structure identique au bloc "⚙️ Options d'orientation" pour une expérience utilisateur homogène
+- 📦 **Interface compacte** : Options avancées masquées par défaut, réduisant le scroll nécessaire
+
+## [0.6.5] - 2025-11-19
+
+### Interface Utilisateur
+- 🔧 **Icône Configuration** : Ajout d'une icône engrenage (mdi-cog) au titre du bloc Configuration pour une identification immédiate des réglages
+- 💡 **Icône principale unifiée** : Remplacement de l'ancien SVG par l'icône officielle Home Assistant (mdi:led-strip-variant) utilisée dans la barre latérale pour cohérence visuelle
+- 🧩 **Dépendance MDI** : Intégration de la webfont Material Design Icons via CDN pour afficher les icônes (aucun impact fonctionnel côté backend)
+
+### Technique
+- 📦 Aucun changement serveur, uniquement frontend (`index.html`) + ajout de la feuille de style MDI CDN
+- 🆙 Version incrémentée (`config.json` → 0.6.5)
+
 ## [0.6.4] - 2025-11-19
 
 ### Add-on

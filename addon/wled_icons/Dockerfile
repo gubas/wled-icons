@@ -1,5 +1,5 @@
 # Multi-stage build pour optimiser la taille de l'image
-FROM python:3.11-slim as builder
+FROM python:3.11-alpine AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -8,34 +8,29 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Installation des dépendances système pour la compilation
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       gcc \
-       libcairo2-dev \
-       libpango1.0-dev \
-       libgdk-pixbuf-2.0-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Installation des dépendances de build (gcc pour compiler Pillow)
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    jpeg-dev \
+    zlib-dev \
+    libjpeg
 
-# Installation des dépendances Python dans un répertoire dédié
+# Installation des dépendances Python
 COPY requirements.txt .
 RUN pip install --user --no-warn-script-location -r requirements.txt
 
-# Stage final - image minimale
-FROM python:3.11-slim
+# Stage final - image minimale Alpine
+FROM python:3.11-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH=/root/.local/bin:$PATH
 
-# Installation uniquement des bibliothèques runtime (pas les -dev)
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       libcairo2 \
-       libpango-1.0-0 \
-       libgdk-pixbuf-2.0-0 \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+# Installation uniquement des bibliothèques runtime nécessaires
+RUN apk add --no-cache \
+    libjpeg \
+    libstdc++
 
 WORKDIR /app
 

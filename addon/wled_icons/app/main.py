@@ -7,7 +7,6 @@ from pathlib import Path
 import requests
 from io import BytesIO
 from PIL import Image, ImageSequence, ImageDraw, ImageFilter
-import cairosvg
 import time
 import json
 import threading
@@ -125,29 +124,7 @@ def send_frame(host: str, colors: List[List[int]], brightness: int = 255):
         raise HTTPException(status_code=502, detail=f"Connection error: {str(e)}")
 
 
-def rasterize_svg(svg_bytes: bytes, color: Optional[str]) -> Image.Image:
-    """
-    Optimized SVG to 8x8 rasterization with smart preprocessing
-    """
-    # Rasterize at medium resolution (32x32) for better edge detection
-    png = cairosvg.svg2png(
-        bytestring=svg_bytes, 
-        output_width=32, 
-        output_height=32, 
-        background_color='rgba(0,0,0,0)'
-    )
-    img = Image.open(BytesIO(png)).convert("RGBA")
-    
-    # Apply threshold to get binary image (simplify details)
-    gray = img.convert("L")
-    threshold = 128
-    binary = gray.point(lambda x: 255 if x > threshold else 0, mode='1')
-    binary = binary.convert("RGBA")
-    
-    # Copy alpha channel from original
-    binary.putalpha(img.getchannel("A"))
-    
-    # Downscale with NEAREST for pixel-perfect effect
+# rasterize_svg removed - SVG endpoint deprecated
     img = binary.resize((8, 8), Image.Resampling.NEAREST)
     
     if color:
@@ -170,10 +147,7 @@ class IconRequest(BaseModel):
     brightness: int = Field(255, ge=0, le=255, description="Luminosité (0-255)")
 
 
-class SvgRequest(BaseModel):
-    host: str
-    svg: str = Field(..., description="Contenu SVG en texte (UTF-8)")
-    color: Optional[str] = None
+# SvgRequest removed - deprecated endpoint
 
 
 class PngRequest(BaseModel):
@@ -299,12 +273,7 @@ def show_icon(req: IconRequest):
     return {"ok": True, "mode": "animation", "frames": len(sequence)}
 
 
-@app.post("/show/svg")
-def show_svg(req: SvgRequest):
-    img = rasterize_svg(req.svg.encode('utf-8'), req.color)
-    colors = frame_to_colors(img)
-    send_frame(req.host, colors)
-    return {"ok": True}
+# /show/svg endpoint removed - deprecated
 
 
 @app.post("/show/png")

@@ -5,8 +5,8 @@
   "add-ons": {
     "wled_icons": {
       "name": "WLED Icons",
-      "description": "Rendu d'icônes MDI/SVG/PNG/GIF vers matrice WLED 8x8",
-      "url": "https://github.com/gubas/wled-icons/tree/main/wled_icons"
+      "description": "Affichage d'icônes LaMetric animées sur matrice WLED 8x8",
+      "url": "https://github.com/gubas/wled-icons/tree/main/addon/wled_icons"
     }
   }
 }
