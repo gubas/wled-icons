@@ -56,13 +56,14 @@ body {
 
 @media (min-width: 1024px) {
     .container {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: minmax(300px, 380px) 1fr;  /* Config fixed, Editor takes rest */
+        align-items: start;  /* Align cards to top */
     }
 }
 
 @media (min-width: 1440px) {
     .container {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: minmax(340px, 420px) 1fr;  /* Slightly wider config on large screens */
     }
 }
 
@@ -77,6 +78,7 @@ body {
 
 .card-header {
     grid-column: 1 / -1;
+    padding: 0.75rem 1rem;  /* Reduced padding for header */
 }
 
 .card-library {
@@ -87,17 +89,20 @@ body {
     .card {
         padding: 1.5rem;
     }
+    .card-header {
+        padding: 1rem 1.5rem;  /* Slightly larger on desktop */
+    }
 }
 
 h1 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.35rem;
+    margin-bottom: 0.25rem;  /* Reduced margin */
     color: var(--text);
 }
 
 @media (min-width: 768px) {
     h1 {
-        font-size: 1.75rem;
+        font-size: 1.5rem;  /* Smaller on desktop too */
     }
 }
 
@@ -111,8 +116,8 @@ h1 svg {
 
 .subtitle {
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
+    margin-bottom: 0.5rem;  /* Reduced from 1.5rem */
+    font-size: 0.85rem;     /* Slightly smaller */
 }
 
 a {
@@ -704,6 +709,42 @@ button:active {
 .btn-icon {
     min-width: 36px;
     padding: 0.5rem;
+}
+
+/* Centered save button under the grid */
+.center-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.center-actions .save-button {
+    width: auto;             /* not full width */
+    min-width: 220px;        /* large button */
+    margin-top: 1rem;
+}
+
+/* Action row for Send / Stop buttons */
+.actions-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+    margin-top: 0.5rem;
+}
+
+.actions-row button {
+    width: auto;           /* override default 100% width */
+    margin-top: 0;         /* remove top margin inside row */
+    flex: 1;               /* equal width buttons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;      /* equal height */
+}
+
+@media (min-width: 480px) {
+    .actions-row button {
+        min-height: 44px;
+    }
 }
 
 .save-dialog {

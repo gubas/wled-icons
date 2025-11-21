@@ -75,9 +75,9 @@
                     </div>
                 </div>
                 
-                <div style='display: flex; gap: 0.5rem; align-items: stretch;'>
-                    <button type='button' onclick='sendIcon()' style='flex: 1;' title='Afficher sur WLED'>📤</button>
-                    <button type='button' onclick='stopAnimation()' class='btn-secondary' title='Arrêter l'\''animation' style='padding: 0 1rem;'>⏹️</button>
+                <div class='actions-row'>
+                    <button type='button' onclick='sendIcon()' class='btn-primary' title='Afficher sur WLED'>📤</button>
+                    <button type='button' onclick='stopAnimation()' class='btn-secondary' title='Arrêter l\'animation'>⏹️</button>
                 </div>
             </form>
         </div>
@@ -144,7 +144,10 @@
                         </div>
                     </div>
                     
-                    <button type='button' onclick='openSaveDialog()' class='btn-primary' style='margin-top: 1rem;'>💾 Sauvegarder</button>
+                    
+                </div>
+                <div class='center-actions'>
+                    <button type='button' onclick='openSaveDialog()' class='btn-primary save-button'>💾 Sauvegarder</button>
                 </div>
             </div>
             
