@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2025-11-21
+
+### Optimisations Docker
+- 🐋 **Image Alpine** : Migration de Debian Slim vers Alpine Linux pour réduire la taille de l'image de ~60%
+- 🗑️ **Dépendances allégées** : Suppression de cairosvg et ses dépendances lourdes (cairo, pango, gdk-pixbuf)
+- 🚫 **Endpoint SVG supprimé** : Retrait de `/show/svg` et `rasterize_svg()` (obsolètes)
+- 📦 **Build optimisé** : Réduction du temps de build et de la taille finale (~50-80 MB au lieu de ~150-200 MB)
+- 🧹 **.dockerignore amélioré** : Exclusion de plus de fichiers inutiles (venv, node_modules, IDE, db)
+
+### Documentation
+- 📝 **API.md à jour** : Version 0.6.7, endpoints corrigés (`/show/icon`, `/stop`), documentation frames complète
+- 📚 **CHANGELOG unifié** : Fusion des 2 changelogs en un seul fichier à la racine
+
 ## [0.6.7] - 2025-11-21
 
 ### Interface Utilisateur
