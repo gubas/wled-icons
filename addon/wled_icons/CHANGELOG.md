@@ -1,5 +1,12 @@
 # Changelog - WLED Icons Add-on
 
+## [0.6.6] - 2025-11-21
+
+### Interface Utilisateur
+- 🎬 **Options d'animation masquables** : Les contrôles d'animation (FPS, boucles) sont maintenant repliables via un bouton "🎬 Options d'animation" pour une interface plus épurée
+- 🧹 **Cohérence UI** : Structure identique au bloc "⚙️ Options d'orientation" pour une expérience utilisateur homogène
+- 📦 **Interface compacte** : Options avancées masquées par défaut, réduisant le scroll nécessaire
+
 ## [0.6.5] - 2025-11-19
 
 ### Interface Utilisateur

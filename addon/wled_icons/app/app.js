@@ -138,6 +138,12 @@ function toggleOrientation() {
     section.style.display = isHidden ? 'block' : 'none';
 }
 
+function toggleAnimation() {
+    const section = document.getElementById('animationSection');
+    const isHidden = section.style.display === 'none';
+    section.style.display = isHidden ? 'block' : 'none';
+}
+
 function switchTab(tabName) {
     // Update tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));

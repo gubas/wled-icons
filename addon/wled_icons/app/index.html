@@ -56,18 +56,22 @@
                     </select>
                 </div>
                 
-                <div class='section-title'>Animation (GIF uniquement)</div>
-                <label class='checkbox-label'>
-                    <input type='checkbox' name='animate' checked/>Activer l'animation
-                </label>
-                <div class='inline-inputs'>
-                    <div>
-                        <label>FPS</label>
-                        <input name='icon_fps' type='number' placeholder='Auto' min='1' max='60'/>
-                    </div>
-                    <div>
-                        <label>Boucles (-1 = infini)</label>
-                        <input name='icon_loop' type='number' value='1' min='-1' max='999'/>
+                <button type='button' onclick='toggleAnimation()' class='btn-secondary' style='margin-top: 1rem'>🎬 Options d'animation</button>
+                
+                <div id='animationSection' style='display: none'>
+                    <div class='section-title'>Animation (GIF uniquement)</div>
+                    <label class='checkbox-label'>
+                        <input type='checkbox' name='animate' checked/>Activer l'animation
+                    </label>
+                    <div class='inline-inputs'>
+                        <div>
+                            <label>FPS</label>
+                            <input name='icon_fps' type='number' placeholder='Auto' min='1' max='60'/>
+                        </div>
+                        <div>
+                            <label>Boucles (-1 = infini)</label>
+                            <input name='icon_loop' type='number' value='1' min='-1' max='999'/>
+                        </div>
                     </div>
                 </div>
                 
