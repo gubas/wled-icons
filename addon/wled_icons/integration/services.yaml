@@ -1,0 +1,49 @@
+show_lametric:
+  name: Show LaMetric Icon
+  description: Affiche une icône LaMetric (statique ou animée) sur WLED 8x8
+  fields:
+    icon_id:
+      description: ID de l'icône LaMetric (ex: 1486, 2867)
+      example: "1486"
+      required: true
+    host:
+      description: Adresse IP/host WLED (optionnel si configuré)
+      example: "192.168.1.50"
+    color:
+      description: Couleur hex optionnelle pour recolorisation
+      example: "#FF0000"
+    rotate:
+      description: Rotation en degrés (0, 90, 180, 270)
+      example: 90
+    flip_h:
+      description: Miroir horizontal
+      example: false
+    flip_v:
+      description: Miroir vertical
+      example: false
+    animate:
+      description: Activer l'animation pour les GIFs
+      example: true
+    fps:
+      description: FPS forcé pour animation (optionnel)
+      example: 10
+    loop:
+      description: Nombre de boucles (-1 pour infini)
+      example: 1
+    brightness:
+      description: Luminosité (0-255)
+      example: 200
+    addon_url:
+      description: URL de l'add-on (optionnel si configuré)
+      example: "http://localhost:8234"
+
+stop:
+  name: Stop Animation
+  description: Arrête l'animation en cours sur WLED
+  fields:
+    host:
+      description: Adresse IP/host WLED (optionnel si configuré)
+      example: "192.168.1.50"
+    addon_url:
+      description: URL de l'add-on (optionnel si configuré)
+      example: "http://localhost:8234"

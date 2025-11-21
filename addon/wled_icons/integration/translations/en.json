@@ -1,0 +1,27 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "WLED Icons Setup",
+        "description": "Configure host and optional add-on URL.",
+        "data": {
+          "host": "WLED Host",
+          "addon_url": "Add-on Base URL"
+        }
+      }
+    },
+    "error": {
+      "host_required": "Host is required"
+    }
+  },
+  "services": {
+    "show_lametric": {
+      "name": "Show LaMetric Icon",
+      "description": "Display a LaMetric icon (static or animated) on the 8x8 WLED matrix"
+    },
+    "show_gif": {
+      "name": "Show Custom GIF",
+      "description": "Display a custom 8x8 GIF animation on WLED"
+    }
+  }
+}

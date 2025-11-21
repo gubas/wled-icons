@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.3] - 2025-11-21
+
+### Corrections
+- 🐛 **Build Docker** : Correction erreur build (lien symbolique → copie réelle)
+- 📦 Le dossier `integration/` contient maintenant une copie physique
+
 ## [0.7.2] - 2025-11-21
 
 ### Intégration Home Assistant

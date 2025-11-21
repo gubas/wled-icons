@@ -1,6 +1,6 @@
 {
   "name": "WLED Icons",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "slug": "wled_icons",
   "description": "Affichage d'icônes LaMetric animées sur matrice WLED 8x8",
   "url": "https://github.com/gubas/wled-icons",
