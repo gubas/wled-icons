@@ -1,5 +1,14 @@
 # Changelog - WLED Icons Add-on
 
+## [0.6.7] - 2025-11-21
+
+### Interface Utilisateur
+- 📐 **Layout optimisé** : Le bloc "Créer une Icône Personnalisée" occupe maintenant tout l'espace disponible (colonne Configuration à largeur fixe)
+- ⬆️ **Alignement amélioré** : Les 3 blocs principaux sont alignés en haut pour une meilleure cohérence visuelle
+- 📦 **En-tête compact** : Réduction de l'espace occupé par le bloc titre (padding, marges, tailles de police réduites)
+- ⚖️ **Boutons d'action équilibrés** : Les boutons "Envoyer" (📤) et "Arrêter" (⏹️) ont maintenant la même largeur et hauteur
+- 💾 **Bouton Sauvegarder centré** : Positionné au centre sous la grille de dessin pour un meilleur équilibre visuel
+
 ## [0.6.6] - 2025-11-21
 
 ### Interface Utilisateur

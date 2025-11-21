@@ -1,6 +1,6 @@
 # WLED Icons - Affichage d'icônes LaMetric sur matrice LED 8x8
 
-> ⚠️ **VERSION 0.6.6** : Ce projet est en développement actif. Des bugs peuvent survenir et des fonctionnalités peuvent changer. Testez en environnement non-critique ! 🧪
+> ⚠️ **VERSION 0.6.7** : Ce projet est en développement actif. Des bugs peuvent survenir et des fonctionnalités peuvent changer. Testez en environnement non-critique ! 🧪
 
 Affichez des icônes **LaMetric animées** sur votre matrice WLED 8x8 directement depuis Home Assistant.
 
@@ -276,6 +276,13 @@ docker run --rm -p 8234:8234 wled_icons_test
 - **Major** : Breaking changes API
 - **Minor** : Nouvelles fonctionnalités
 - **Patch** : Bugfixes
+
+### 0.6.7 (Layout optimisé)
+- Bloc éditeur occupe tout l'espace disponible (config à largeur fixe)
+- Alignement des 3 blocs principaux en haut
+- En-tête compact (réduction padding/marges/polices)
+- Boutons Send/Stop équilibrés (même taille)
+- Bouton Sauvegarder centré sous la grille
 
 ### 0.6.6 (UI compacte)
 - Options d'animation repliables (bouton toggle)
