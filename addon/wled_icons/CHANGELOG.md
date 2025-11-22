@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.5] - 2025-11-22
+
+### Documentation
+- 📝 **PROMPTS.md** : Workflow de release automatisé documenté
+- 🚀 **Release automatique** : Commande `/release` exécute tout sans confirmation
+
 ## [0.7.4] - 2025-11-22
 
 ### Documentation et Outils
