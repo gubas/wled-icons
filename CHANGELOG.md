@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.4] - 2025-11-22
+
+### Documentation et Outils
+- 🛠️ **Scripts de release** : Ajout de `release.sh` et `release_ai.sh` pour automatiser les releases
+- 📋 **Raccourcis Copilot** : Création de `PROMPTS.md` avec commandes raccourcies (`/release`, `/sync-integration`, etc.)
+- 🧹 **Nettoyage** : Simplification du workflow de release
+
 ## [0.7.3] - 2025-11-21
 
 ### Corrections

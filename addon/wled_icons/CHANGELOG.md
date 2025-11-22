@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.4] - 2025-11-22
+
+### Documentation et Outils
+- 🛠️ **Scripts de release** : Automatisation des releases avec scripts bash
+- 📋 **Raccourcis** : Commandes simplifiées pour tâches répétitives
+- 🧹 **Workflow amélioré** : Processus de release simplifié
+
 ## [0.7.3] - 2025-11-21
 
 ### Corrections
